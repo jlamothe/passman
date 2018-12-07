@@ -1,8 +1,10 @@
-{-
+{-|
 
-passman
-Copyright (C) 2018 Jonathan Lamothe
-<jlamothe1980@gmail.com>
+Module:      Password
+Description: a simple password manager
+Copyright:   (C) 2018 Jonathan Lamothe
+License:     LGPLv3 (or later)
+Maintainer:  jlamothe1980@gmail.com
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -19,9 +21,5 @@ License along with this program.  If not, see
 <https://www.gnu.org/licenses/>.
 
 -}
-module Main where
 
-main :: IO ()
-main = undefined
-
---jl
+module Password where
