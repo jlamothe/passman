@@ -26,7 +26,7 @@ library:
   source-dirs: src
 
 executables:
-  passman-exe:
+  passman:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -35,6 +35,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - passman
+    - HCL >= 1.7.1 && < 2
 
 tests:
   passman-test:

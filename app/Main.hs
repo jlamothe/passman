@@ -19,9 +19,30 @@ License along with this program.  If not, see
 <https://www.gnu.org/licenses/>.
 
 -}
+
 module Main where
 
+import System.Console.HCL
+  ( Request (..)
+  , execReq
+  , prompt
+  , reqFail
+  , reqIO
+  , reqPassword
+  , required
+  )
+
 main :: IO ()
-main = undefined
+main = execReq getMasterPass
+
+getMasterPass :: Request String
+getMasterPass = do
+  p1 <- required $ prompt "master password: " reqPassword
+  p2 <- required $ prompt "confirm master password: " reqPassword
+  if p1 /= p2
+    then do
+      reqIO $ putStrLn "passwords do not match"
+      reqFail
+    else return p1
 
 --jl
