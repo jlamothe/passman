@@ -61,6 +61,7 @@ mainMenu :: S.StateT Status IO ()
 mainMenu = do
   menu "Main Menu"
     [ ( "change master password", changeMasterPass )
+    , ( "lock session",           lockSession      )
     , ( "quit",                   quit             )
     ]
 
@@ -70,6 +71,17 @@ changeMasterPass = do
   newP <- req $ R.reqDefault getMasterPass oldP
   S.modify $ set masterPass newP
   mainMenu
+
+lockSession :: S.StateT Status IO ()
+lockSession = do
+  lift $ putStrLn "\nsession locked"
+  pass <- S.gets $ view masterPass
+  mx <- lift $ R.runRequest $ R.prompt "password: " $ R.reqPassword
+  case mx of
+    Nothing -> lockSession
+    Just x  -> if x == pass
+      then mainMenu
+      else lockSession
 
 quit :: S.StateT Status IO ()
 quit = return ()
