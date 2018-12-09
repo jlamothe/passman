@@ -74,8 +74,12 @@ changeMasterPass = do
 quit :: S.StateT Status IO ()
 quit = return ()
 
-menu :: String -> [(String, S.StateT Status IO a)] -> S.StateT Status IO a
-menu title = reqState . R.prompt title . R.reqMenu . map menuItem
+menu
+  :: String
+  -> [(String, S.StateT Status IO a)]
+  -> S.StateT Status IO a
+menu title = reqState . R.prompt ("\n*** " ++ title ++ " ***") .
+  R.reqMenu . map menuItem
 
 menuItem :: (String, a) -> (String, R.Request a)
 menuItem (str, x) = (str, return x)
