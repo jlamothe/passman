@@ -22,4 +22,24 @@ License along with this program.  If not, see
 
 -}
 
-module Password where
+module Password (
+  -- * Data Types
+  PWPolicy (..)
+  ) where
+
+-- | defines a password policy
+data PWPolicy = PWPolicy
+  { _pwLength :: Int
+  -- ^ password length
+  , _pwUpper :: Int
+  -- ^ the minimum number of upper case characters
+  , _pwLower :: Int
+  -- ^ the minimum number of lower case characters
+  , _pwDigits :: Int
+  -- ^ the minimum number of digits
+  , _pwSpecial :: Maybe Int
+  -- ^ the minimum number of non-alphanumeric characters (not allowed
+  -- if @"Nothing"@)
+  } deriving (Eq, Show)
+
+--jl
