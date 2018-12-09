@@ -20,29 +20,70 @@ License along with this program.  If not, see
 
 -}
 
+{-# LANGUAGE TemplateHaskell #-}
+
 module Main where
 
-import System.Console.HCL
-  ( Request (..)
-  , execReq
-  , prompt
-  , reqFail
-  , reqIO
-  , reqPassword
-  , required
-  )
+import Control.Lens (makeLenses, set, view)
+import qualified Control.Monad.Trans.State as S
+import Control.Monad (join)
+import Control.Monad.Trans.Class (lift)
+import Data.Maybe (fromJust)
+import qualified System.Console.HCL as R
+
+data Status = Status
+  { _masterPass :: String
+  }
+
+makeLenses ''Status
 
 main :: IO ()
-main = execReq getMasterPass
+main = do
+  ms <- R.runRequest setup
+  case ms of
+    Nothing -> return ()
+    Just s  -> S.evalStateT mainMenu s
 
-getMasterPass :: Request String
+setup :: R.Request Status
+setup = fmap Status getMasterPass
+
+getMasterPass :: R.Request String
 getMasterPass = do
-  p1 <- required $ prompt "master password: " reqPassword
-  p2 <- required $ prompt "confirm master password: " reqPassword
+  p1 <- R.required $ R.prompt "master password: " R.reqPassword
+  p2 <- R.required $ R.prompt "confirm master password: " R.reqPassword
   if p1 /= p2
     then do
-      reqIO $ putStrLn "passwords do not match"
-      reqFail
+      R.reqIO $ putStrLn "passwords do not match"
+      R.reqFail
     else return p1
+
+mainMenu :: S.StateT Status IO ()
+mainMenu = do
+  menu "Main Menu"
+    [ ( "change master password", changeMasterPass )
+    , ( "quit",                   quit             )
+    ]
+
+changeMasterPass :: S.StateT Status IO ()
+changeMasterPass = do
+  oldP <- S.gets $ view masterPass
+  newP <- req $ R.reqDefault getMasterPass oldP
+  S.modify $ set masterPass newP
+  mainMenu
+
+quit :: S.StateT Status IO ()
+quit = return ()
+
+menu :: String -> [(String, S.StateT Status IO a)] -> S.StateT Status IO a
+menu title = reqState . R.prompt title . R.reqMenu . map menuItem
+
+menuItem :: (String, a) -> (String, R.Request a)
+menuItem (str, x) = (str, return x)
+
+reqState :: R.Request (S.StateT s IO a) -> S.StateT s IO a
+reqState = join . req
+
+req :: R.Request a -> S.StateT s IO a
+req = lift . fmap fromJust . R.runRequest . R.required
 
 --jl

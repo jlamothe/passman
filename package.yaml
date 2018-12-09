@@ -21,6 +21,7 @@ description:         Please see the README on GitHub at <https://github.com/jlam
 
 dependencies:
 - base >= 4.7 && < 5
+- lens
 
 library:
   source-dirs: src
@@ -36,6 +37,7 @@ executables:
     dependencies:
     - passman
     - HCL >= 1.7.1 && < 2
+    - transformers
 
 tests:
   passman-test:
