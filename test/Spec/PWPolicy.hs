@@ -20,19 +20,21 @@ License along with this program.  If not, see
 
 -}
 
-module Main where
+module Spec.PWPolicy (tests) where
 
-import Control.Monad (when)
-import System.Exit (exitFailure)
-import Test.HUnit (errors, failures, runTestTT, Test(TestList))
+import Control.Lens ((^.))
+import Test.HUnit (Test(..), (~?=))
 
-import qualified Spec.PWPolicy as PWPolicy
+import Password
 
-main = do
-  counts <- runTestTT tests
-  when (failures counts > 0 || errors counts > 0)
-    exitFailure
+tests = TestLabel "PWPolicy" $ TestList $ map test'
+  [ ( "pwLength",  newPWPolicy^.pwLength  ~?= 16     )
+  , ( "pwUpper",   newPWPolicy^.pwUpper   ~?= 0      )
+  , ( "pwLower",   newPWPolicy^.pwLower   ~?= 0      )
+  , ( "pwDigits",  newPWPolicy^.pwDigits  ~?= 0      )
+  , ( "pwSpecial", newPWPolicy^.pwSpecial ~?= Just 0 )
+  ]
 
-tests = TestList [PWPolicy.tests]
+test' (label, x) = TestLabel label x
 
 --jl

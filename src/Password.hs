@@ -29,7 +29,9 @@ module Password (
   PWPolicy (..),
   -- ** Lenses
   -- $lenses
-  pwLength, pwUpper, pwLower, pwDigits, pwSpecial
+  pwLength, pwUpper, pwLower, pwDigits, pwSpecial,
+  -- ** Default Instances
+  newPWPolicy
   ) where
 
 import Control.Lens (makeLenses)
@@ -55,5 +57,9 @@ data PWPolicy = PWPolicy
 -- details.
 
 makeLenses ''PWPolicy
+
+-- | default password policy
+newPWPolicy :: PWPolicy
+newPWPolicy = PWPolicy 16 0 0 0 (Just 0)
 
 --jl
