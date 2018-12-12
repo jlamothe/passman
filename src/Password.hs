@@ -31,10 +31,13 @@ module Password (
   -- $lenses
   pwLength, pwUpper, pwLower, pwDigits, pwSpecial,
   -- ** Default Instances
-  newPWPolicy
+  newPWPolicy,
+  -- * Functions
+  validatePWPolicy
   ) where
 
-import Control.Lens (makeLenses)
+import Control.Lens (makeLenses, (^.))
+import Data.Maybe (fromMaybe)
 
 -- | defines a password policy
 data PWPolicy = PWPolicy
@@ -61,5 +64,18 @@ makeLenses ''PWPolicy
 -- | default password policy
 newPWPolicy :: PWPolicy
 newPWPolicy = PWPolicy 16 0 0 0 (Just 0)
+
+-- | validates a password policy
+validatePWPolicy
+  :: PWPolicy
+  -- ^ the policy being validated
+  -> Maybe PWPolicy
+  -- ^ the policy if it is valid, or @"Nothing"@ if it is not
+validatePWPolicy x = if needed <= x^.pwLength
+  then Just x
+  else Nothing
+  where
+    needed = x^.pwUpper + x^.pwLower + x^.pwDigits + special
+    special = fromMaybe 0 $ x^.pwSpecial
 
 --jl

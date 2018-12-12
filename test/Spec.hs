@@ -27,12 +27,13 @@ import System.Exit (exitFailure)
 import Test.HUnit (errors, failures, runTestTT, Test(TestList))
 
 import qualified Spec.PWPolicy as PWPolicy
+import qualified Spec.ValidatePWPolicy as ValidatePWPolicy
 
 main = do
   counts <- runTestTT tests
   when (failures counts > 0 || errors counts > 0)
     exitFailure
 
-tests = TestList [PWPolicy.tests]
+tests = TestList [PWPolicy.tests, ValidatePWPolicy.tests]
 
 --jl
