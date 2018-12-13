@@ -33,10 +33,11 @@ module Password (
   -- ** Default Instances
   newPWPolicy,
   -- * Functions
-  validatePWPolicy
+  validatePWPolicy, applyPWPolicy
   ) where
 
 import Control.Lens (makeLenses, (^.))
+import Data.Char (isUpper, isLower, isDigit, isAlphaNum)
 import Data.Maybe (fromMaybe)
 
 -- | defines a password policy
@@ -81,5 +82,23 @@ validatePWPolicy x = all id
   ] where
     needed = x^.pwUpper + x^.pwLower + x^.pwDigits + special
     special = fromMaybe 0 $ x^.pwSpecial
+
+-- | checks whether or not a password meets a given password policy
+applyPWPolicy
+  :: String
+  -- ^ the password
+  -> PWPolicy
+  -- ^ the policy
+  -> Bool
+  -- ^ @"True"@ if the password meets the policy, @"False"@ otherwise
+applyPWPolicy pw policy = all id
+  [ length pw <= policy^.pwLength
+  , length (filter isUpper pw) >= policy^.pwUpper
+  , length (filter isLower pw) >= policy^.pwLower
+  , length (filter isDigit pw) >= policy^.pwDigits
+  , length (filter (not . isAlphaNum) pw) >=
+    fromMaybe (succ $ policy^.pwLength) (policy^.pwSpecial)
+  , validatePWPolicy policy
+  ]
 
 --jl

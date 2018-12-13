@@ -26,6 +26,7 @@ import Control.Monad (when)
 import System.Exit (exitFailure)
 import Test.HUnit (errors, failures, runTestTT, Test(TestList))
 
+import qualified Spec.ApplyPWPolicy as ApplyPWPolicy
 import qualified Spec.PWPolicy as PWPolicy
 import qualified Spec.ValidatePWPolicy as ValidatePWPolicy
 
@@ -34,6 +35,10 @@ main = do
   when (failures counts > 0 || errors counts > 0)
     exitFailure
 
-tests = TestList [PWPolicy.tests, ValidatePWPolicy.tests]
+tests = TestList
+  [ PWPolicy.tests
+  , ValidatePWPolicy.tests
+  , ApplyPWPolicy.tests
+  ]
 
 --jl
