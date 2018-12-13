@@ -71,8 +71,15 @@ validatePWPolicy
   -- ^ the policy being validated
   -> Bool
   -- ^ indicates whether or not the policy is valid
-validatePWPolicy x = needed <= x^.pwLength where
-  needed = x^.pwUpper + x^.pwLower + x^.pwDigits + special
-  special = fromMaybe 0 $ x^.pwSpecial
+validatePWPolicy x = all id
+  [ needed <= x^.pwLength
+  , x^.pwLength >= 0
+  , x^.pwUpper >= 0
+  , x^.pwLower >= 0
+  , x^.pwDigits >= 0
+  , fromMaybe 0 (x^.pwSpecial) >= 0
+  ] where
+    needed = x^.pwUpper + x^.pwLower + x^.pwDigits + special
+    special = fromMaybe 0 $ x^.pwSpecial
 
 --jl

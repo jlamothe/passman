@@ -28,16 +28,21 @@ import Test.HUnit (Test(..), (~?=))
 import Password
 
 tests = TestLabel "validatePWPolicy" $ TestList $ map test'
-  [ ( "default",          id,                    True  )
-  , ( "no special chars", set pwSpecial Nothing, True  )
-  , ( "valid minimums",   validMins,             True  )
-  , ( "excessive upper",  set pwUpper 99,        False )
-  , ( "excessive lower",  set pwLower 99,        False )
-  , ( "excessive digits", set pwDigits 99,       False )
-  , ( "excessive total",  excessive,             False )
-  , ( "short",            set pwLength 8,        True  )
-  , ( "short valid",      shortValid,            True  )
-  , ( "short invalid",    shortInvalid,          False )
+  [ ( "default",          id,                        True  )
+  , ( "no special chars", set pwSpecial Nothing,     True  )
+  , ( "valid minimums",   validMins,                 True  )
+  , ( "excessive upper",  set pwUpper 99,            False )
+  , ( "excessive lower",  set pwLower 99,            False )
+  , ( "excessive digits", set pwDigits 99,           False )
+  , ( "excessive total",  excessive,                 False )
+  , ( "short",            set pwLength 8,            True  )
+  , ( "short valid",      shortValid,                True  )
+  , ( "short invalid",    shortInvalid,              False )
+  , ( "negative length",  set pwLength (-1),         False )
+  , ( "negative upper",   set pwUpper (-1),          False )
+  , ( "negative lower",   set pwLower (-1),          False )
+  , ( "negative digits",  set pwDigits (-1),         False )
+  , ( "negative special", set pwSpecial (Just (-1)), False )
   ]
 
 test' (label, f, expect) = TestLabel label $
