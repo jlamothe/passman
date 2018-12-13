@@ -40,8 +40,8 @@ tests = TestLabel "validatePWPolicy" $ TestList $ map test'
   , ( "short invalid",    shortInvalid,          False )
   ]
 
-test' (label, f, valid) = TestLabel label $
-  validatePWPolicy x ~?= if valid then Just x else Nothing where
+test' (label, f, expect) = TestLabel label $
+  validatePWPolicy x ~?= expect where
   x = f newPWPolicy
 
 validMins = setAll 1

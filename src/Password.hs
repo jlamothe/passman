@@ -69,13 +69,10 @@ newPWPolicy = PWPolicy 16 0 0 0 (Just 0)
 validatePWPolicy
   :: PWPolicy
   -- ^ the policy being validated
-  -> Maybe PWPolicy
-  -- ^ the policy if it is valid, or @"Nothing"@ if it is not
-validatePWPolicy x = if needed <= x^.pwLength
-  then Just x
-  else Nothing
-  where
-    needed = x^.pwUpper + x^.pwLower + x^.pwDigits + special
-    special = fromMaybe 0 $ x^.pwSpecial
+  -> Bool
+  -- ^ indicates whether or not the policy is valid
+validatePWPolicy x = needed <= x^.pwLength where
+  needed = x^.pwUpper + x^.pwLower + x^.pwDigits + special
+  special = fromMaybe 0 $ x^.pwSpecial
 
 --jl
