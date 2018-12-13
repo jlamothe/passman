@@ -36,9 +36,9 @@ tests = TestLabel "applyPWPolicy" $ TestList $ map test'
   , ( "sufficient lower",     "password",           set pwLower 1,  True  )
   , ( "insufficient digits",  "password",           set pwDigits 1, False )
   , ( "sufficient digits",    "password1",          set pwDigits 1, True  )
-  , ( "insifficoent special", "password",           spec (Just 1),  False )
-  , ( "sifficoent special",   "password/",          spec (Just 1),  True  )
-  , ( "illegal special",      "password/",          spec Nothing,   False )
+  , ( "insufficient special", "Password1",          spec (Just 1),  False )
+  , ( "sufficient special",   "Password1/",         spec (Just 1),  True  )
+  , ( "illegal special",      "Password1/",         spec Nothing,   False )
   , ( "bad policy",           "password",           badPolicy,      False )
   ]
 
