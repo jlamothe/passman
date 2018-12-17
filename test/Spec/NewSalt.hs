@@ -20,25 +20,16 @@ License along with this program.  If not, see
 
 -}
 
-module Main where
+module Spec.NewSalt (tests) where
 
-import Control.Monad (when)
-import System.Exit (exitFailure)
-import Test.HUnit (errors, failures, runTestTT, Test(TestList))
+import qualified Data.ByteString as B
+import System.Random (mkStdGen)
+import Test.HUnit (Test(..), (~?=))
 
-import qualified Spec.NewSalt as NewSalt
-import qualified Spec.PWPolicy as PWPolicy
-import qualified Spec.ValidatePWPolicy as ValidatePWPolicy
+import Password
 
-main = do
-  counts <- runTestTT tests
-  when (failures counts > 0 || errors counts > 0)
-    exitFailure
-
-tests = TestList
-  [ PWPolicy.tests
-  , ValidatePWPolicy.tests
-  , NewSalt.tests
-  ]
+tests = TestLabel "newSalt" $ B.length salt ~?= 256 where
+  (salt, _) = newSalt g
+  g = mkStdGen 1
 
 --jl

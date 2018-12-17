@@ -34,7 +34,7 @@ module Password (
   -- *** PWPolicy
   pwLength, pwUpper, pwLower, pwDigits, pwSpecial,
   -- ** Default Instances
-  newPWPolicy,
+  newPWPolicy, newSalt,
   -- * Functions
   validatePWPolicy
   ) where
@@ -44,6 +44,7 @@ import Data.Char (isUpper, isLower, isDigit, isAlphaNum)
 import qualified Data.ByteString as B
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
+import System.Random (RandomGen, randoms, split)
 
 -- | a mapping of service names to password data
 type PWDatabase = M.Map String PWData
@@ -82,6 +83,17 @@ makeLenses ''PWData
 -- | default password policy
 newPWPolicy :: PWPolicy
 newPWPolicy = PWPolicy 16 0 0 0 (Just 0)
+
+-- | builds a new salt
+newSalt
+  :: RandomGen g
+  => g
+  -- ^ the random generator to use
+  -> (B.ByteString, g)
+  -- ^ the result and new random number generator
+newSalt g = (result, g2) where
+  result = B.pack $ take 256 $ randoms g1
+  (g1, g2) = split g
 
 -- | validates a password policy
 validatePWPolicy
