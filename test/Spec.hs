@@ -26,7 +26,6 @@ import Control.Monad (when)
 import System.Exit (exitFailure)
 import Test.HUnit (errors, failures, runTestTT, Test(TestList))
 
-import qualified Spec.ApplyPWPolicy as ApplyPWPolicy
 import qualified Spec.PWPolicy as PWPolicy
 import qualified Spec.ValidatePWPolicy as ValidatePWPolicy
 
@@ -38,7 +37,6 @@ main = do
 tests = TestList
   [ PWPolicy.tests
   , ValidatePWPolicy.tests
-  , ApplyPWPolicy.tests
   ]
 
 --jl
