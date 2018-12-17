@@ -28,6 +28,7 @@ import Control.Lens (makeLenses, set, view)
 import qualified Control.Monad.Trans.State as S
 import Control.Monad (join)
 import Control.Monad.Trans.Class (lift)
+import Data.Foldable (mapM_)
 import Data.Maybe (fromJust)
 import qualified System.Console.HCL as R
 
@@ -38,11 +39,7 @@ data Status = Status
 makeLenses ''Status
 
 main :: IO ()
-main = do
-  ms <- R.runRequest setup
-  case ms of
-    Nothing -> return ()
-    Just s  -> S.evalStateT mainMenu s
+main = R.runRequest setup >>= mapM_ (S.evalStateT mainMenu)
 
 setup :: R.Request Status
 setup = fmap Status getMasterPass
@@ -58,7 +55,7 @@ getMasterPass = do
     else return p1
 
 mainMenu :: S.StateT Status IO ()
-mainMenu = do
+mainMenu =
   menu "Main Menu"
     [ ( "change master password", changeMasterPass )
     , ( "lock session",           lockSession      )
@@ -76,7 +73,7 @@ lockSession :: S.StateT Status IO ()
 lockSession = do
   lift $ putStrLn "\nsession locked"
   pass <- S.gets $ view masterPass
-  mx <- lift $ R.runRequest $ R.prompt "password: " $ R.reqPassword
+  mx <- lift $ R.runRequest $ R.prompt "password: " R.reqPassword
   case mx of
     Nothing -> lockSession
     Just x  -> if x == pass

@@ -28,18 +28,18 @@ import Test.HUnit (Test(..), (~?=))
 import Password
 
 tests = TestLabel "applyPWPolicy" $ TestList $ map test'
-  [ ( "default pass",         "password",           id,             True  )
-  , ( "too long",             take 99 $ repeat 'x', id,             False )
-  , ( "insufficient upper",   "password",           set pwUpper 1,  False )
-  , ( "sufficient upper",     "Password",           set pwUpper 1,  True  )
-  , ( "insufficient lower",   "PASSWORD",           set pwLower 1,  False )
-  , ( "sufficient lower",     "password",           set pwLower 1,  True  )
-  , ( "insufficient digits",  "password",           set pwDigits 1, False )
-  , ( "sufficient digits",    "password1",          set pwDigits 1, True  )
-  , ( "insufficient special", "Password1",          spec (Just 1),  False )
-  , ( "sufficient special",   "Password1/",         spec (Just 1),  True  )
-  , ( "illegal special",      "Password1/",         spec Nothing,   False )
-  , ( "bad policy",           "password",           badPolicy,      False )
+  [ ( "default pass",         "password",       id,             True  )
+  , ( "too long",             replicate 99 'x', id,             False )
+  , ( "insufficient upper",   "password",       set pwUpper 1,  False )
+  , ( "sufficient upper",     "Password",       set pwUpper 1,  True  )
+  , ( "insufficient lower",   "PASSWORD",       set pwLower 1,  False )
+  , ( "sufficient lower",     "password",       set pwLower 1,  True  )
+  , ( "insufficient digits",  "password",       set pwDigits 1, False )
+  , ( "sufficient digits",    "password1",      set pwDigits 1, True  )
+  , ( "insufficient special", "Password1",      spec (Just 1),  False )
+  , ( "sufficient special",   "Password1/",     spec (Just 1),  True  )
+  , ( "illegal special",      "Password1/",     spec Nothing,   False )
+  , ( "bad policy",           "password",       badPolicy,      False )
   ]
 
 test' (label, pw, f, expect) = TestLabel label $

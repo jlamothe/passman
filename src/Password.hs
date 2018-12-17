@@ -72,7 +72,7 @@ validatePWPolicy
   -- ^ the policy being validated
   -> Bool
   -- ^ indicates whether or not the policy is valid
-validatePWPolicy x = all id
+validatePWPolicy x = and
   [ needed <= x^.pwLength
   , x^.pwLength >= 0
   , x^.pwUpper >= 0
@@ -91,7 +91,7 @@ applyPWPolicy
   -- ^ the policy
   -> Bool
   -- ^ @"True"@ if the password meets the policy, @"False"@ otherwise
-applyPWPolicy pw policy = all id
+applyPWPolicy pw policy = and
   [ length pw <= policy^.pwLength
   , length (filter isUpper pw) >= policy^.pwUpper
   , length (filter isLower pw) >= policy^.pwLower
