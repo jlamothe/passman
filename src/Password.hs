@@ -26,9 +26,12 @@ License along with this program.  If not, see
 
 module Password (
   -- * Data Types
-  PWPolicy (..),
+  PWDatabase, PWData(..), PWPolicy (..),
   -- ** Lenses
   -- $lenses
+  -- *** PWData
+  pwPolicy, pwSalt,
+  -- *** PWPolicy
   pwLength, pwUpper, pwLower, pwDigits, pwSpecial,
   -- ** Default Instances
   newPWPolicy,
@@ -38,7 +41,20 @@ module Password (
 
 import Control.Lens (makeLenses, (^.))
 import Data.Char (isUpper, isLower, isDigit, isAlphaNum)
+import qualified Data.ByteString as B
+import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
+
+-- | a mapping of service names to password data
+type PWDatabase = M.Map String PWData
+
+-- | data necessary to construct a password
+data PWData = PWData
+  { _pwPolicy :: PWPolicy
+  -- ^ the password policy
+  , _pwSalt :: B.ByteString
+  -- ^ random data used to generate the password
+  } deriving (Eq, Show)
 
 -- | defines a password policy
 data PWPolicy = PWPolicy
@@ -61,6 +77,7 @@ data PWPolicy = PWPolicy
 -- details.
 
 makeLenses ''PWPolicy
+makeLenses ''PWData
 
 -- | default password policy
 newPWPolicy :: PWPolicy
