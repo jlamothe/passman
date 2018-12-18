@@ -35,8 +35,8 @@ module Password (
   pwLength, pwUpper, pwLower, pwDigits, pwSpecial,
   -- ** Default Instances
   newPWDatabase, newPWData, newPWPolicy, newPWSalt,
-  -- * Functions
-  validatePWPolicy
+  -- ** Validations
+  validatePWData, validatePWPolicy
   ) where
 
 import Control.Lens (makeLenses, (^.))
@@ -53,7 +53,7 @@ type PWDatabase = M.Map String PWData
 data PWData = PWData
   { _pwPolicy :: PWPolicy
   -- ^ the password policy
-  , _pwSalt :: B.ByteString
+  , _pwSalt :: PWSalt
   -- ^ random data used to generate the password
   } deriving (Eq, Show)
 
@@ -112,6 +112,16 @@ newPWSalt
 newPWSalt g = (result, g2) where
   result = B.pack $ take 256 $ randoms g1
   (g1, g2) = split g
+
+-- | validates password data
+validatePWData
+  :: PWData
+  -- ^ the data to be validated
+  -> Bool
+  -- ^ @"True"@ if valid; @"False"@ otherwise
+validatePWData x =
+  validatePWPolicy (x^.pwPolicy) &&
+  B.length (x^.pwSalt) > 0
 
 -- | validates a password policy
 validatePWPolicy

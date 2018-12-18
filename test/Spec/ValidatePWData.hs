@@ -20,31 +20,30 @@ License along with this program.  If not, see
 
 -}
 
-module Main where
+module Spec.ValidatePWData (tests) where
 
-import Control.Monad (when)
-import System.Exit (exitFailure)
-import Test.HUnit (errors, failures, runTestTT, Test(TestList))
+import Control.Lens (set)
+import qualified Data.ByteString as B
+import System.Random (mkStdGen)
+import Test.HUnit (Test (..), (~?=))
 
-import qualified Spec.NewPWData as NewPWData
-import qualified Spec.NewPWDatabase as NewPWDatabase
-import qualified Spec.NewPWPolicy as NewPWPolicy
-import qualified Spec.NewPWSalt as NewPWSalt
-import qualified Spec.ValidatePWData as ValidatePWData
-import qualified Spec.ValidatePWPolicy as ValidatePWPolicy
+import Password
 
-main = do
-  counts <- runTestTT tests
-  when (failures counts > 0 || errors counts > 0)
-    exitFailure
-
-tests = TestList
-  [ NewPWDatabase.tests
-  , NewPWData.tests
-  , NewPWPolicy.tests
-  , NewPWSalt.tests
-  , ValidatePWPolicy.tests
-  , ValidatePWData.tests
+tests = TestLabel "validatePWData" $ TestList $ map test'
+  [ ( "valid",          new,           True  )
+  , ( "invalid policy", invalidPolicy, False )
+  , ( "invalid salt",   invalidSalt,   False )
   ]
+
+test' (label, x, expect) = TestLabel label $
+  validatePWData x ~?= expect
+
+(new, _) = newPWData g
+
+invalidPolicy = set (pwPolicy.pwLength) (-1) new
+
+invalidSalt = set pwSalt B.empty new
+
+g = mkStdGen 1
 
 --jl
