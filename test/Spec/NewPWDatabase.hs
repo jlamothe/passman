@@ -20,29 +20,13 @@ License along with this program.  If not, see
 
 -}
 
-module Main where
+module Spec.NewPWDatabase (tests) where
 
-import Control.Monad (when)
-import System.Exit (exitFailure)
-import Test.HUnit (errors, failures, runTestTT, Test(TestList))
+import Test.HUnit (Test (..), (~?=))
 
-import qualified Spec.NewPWData as NewPWData
-import qualified Spec.NewPWDatabase as NewPWDatabase
-import qualified Spec.NewPWPolicy as NewPWPolicy
-import qualified Spec.NewPWSalt as NewPWSalt
-import qualified Spec.ValidatePWPolicy as ValidatePWPolicy
+import Password
 
-main = do
-  counts <- runTestTT tests
-  when (failures counts > 0 || errors counts > 0)
-    exitFailure
-
-tests = TestList
-  [ NewPWDatabase.tests
-  , NewPWData.tests
-  , NewPWPolicy.tests
-  , NewPWSalt.tests
-  , ValidatePWPolicy.tests
-  ]
+tests = TestLabel "newPWDatabase" $
+  length newPWDatabase ~?= 0
 
 --jl

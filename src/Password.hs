@@ -34,7 +34,7 @@ module Password (
   -- *** PWPolicy
   pwLength, pwUpper, pwLower, pwDigits, pwSpecial,
   -- ** Default Instances
-  newPWData, newPWPolicy, newPWSalt,
+  newPWDatabase, newPWData, newPWPolicy, newPWSalt,
   -- * Functions
   validatePWPolicy
   ) where
@@ -82,6 +82,10 @@ type PWSalt = B.ByteString
 
 makeLenses ''PWPolicy
 makeLenses ''PWData
+
+-- | default (empty) password database
+newPWDatabase :: PWDatabase
+newPWDatabase = M.empty
 
 -- | builds a new @'PWData'@
 newPWData
