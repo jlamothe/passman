@@ -27,8 +27,8 @@ import System.Exit (exitFailure)
 import Test.HUnit (errors, failures, runTestTT, Test(TestList))
 
 import qualified Spec.NewPWData as NewPWData
-import qualified Spec.NewSalt as NewSalt
-import qualified Spec.PWPolicy as PWPolicy
+import qualified Spec.NewPWPolicy as NewPWPolicy
+import qualified Spec.NewPWSalt as NewPWSalt
 import qualified Spec.ValidatePWPolicy as ValidatePWPolicy
 
 main = do
@@ -37,10 +37,10 @@ main = do
     exitFailure
 
 tests = TestList
-  [ PWPolicy.tests
+  [ NewPWData.tests
+  , NewPWPolicy.tests
+  , NewPWSalt.tests
   , ValidatePWPolicy.tests
-  , NewSalt.tests
-  , NewPWData.tests
   ]
 
 --jl

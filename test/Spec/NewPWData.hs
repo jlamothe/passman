@@ -35,7 +35,7 @@ tests = TestLabel "newPData" $ TestList
 
 testSalt x = TestLabel "pwSalt" $
   x^.pwSalt ~?= salt where
-    (salt, _) = newSalt g
+    (salt, _) = newPWSalt g
 
 testPolicy x = TestLabel "pwPolicy" $
   x^.pwPolicy ~?= newPWPolicy

@@ -20,25 +20,21 @@ License along with this program.  If not, see
 
 -}
 
-module Spec.NewSalt (tests) where
+module Spec.NewPWPolicy (tests) where
 
-import qualified Data.ByteString as B
-import System.Random (mkStdGen)
-import Test.HUnit (Test(..), assertBool, (~?=))
+import Control.Lens ((^.))
+import Test.HUnit (Test(..), (~?=))
 
 import Password
 
-tests = TestLabel "newSalt" $ TestList
-  [ testLength salt
-  , testDiff salt salt'
-  ] where
-    (salt, g') = newSalt g
-    (salt', _) = newSalt g'
-    g = mkStdGen 1
+tests = TestLabel "PWPolicy" $ TestList $ map test'
+  [ ( "pwLength",  newPWPolicy^.pwLength  ~?= 16     )
+  , ( "pwUpper",   newPWPolicy^.pwUpper   ~?= 0      )
+  , ( "pwLower",   newPWPolicy^.pwLower   ~?= 0      )
+  , ( "pwDigits",  newPWPolicy^.pwDigits  ~?= 0      )
+  , ( "pwSpecial", newPWPolicy^.pwSpecial ~?= Just 0 )
+  ]
 
-testLength x = TestLabel "salt length" $ B.length x ~?= 256
-
-testDiff x y = TestLabel "different generators" $ TestCase $
-  assertBool "salts match" $ x /= y
+test' (label, x) = TestLabel label x
 
 --jl
