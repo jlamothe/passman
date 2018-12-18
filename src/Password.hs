@@ -34,7 +34,7 @@ module Password (
   -- *** PWPolicy
   pwLength, pwUpper, pwLower, pwDigits, pwSpecial,
   -- ** Default Instances
-  newPWPolicy, newSalt,
+  newPWData, newPWPolicy, newSalt,
   -- * Functions
   validatePWPolicy
   ) where
@@ -83,6 +83,17 @@ makeLenses ''PWData
 -- | default password policy
 newPWPolicy :: PWPolicy
 newPWPolicy = PWPolicy 16 0 0 0 (Just 0)
+
+-- | builds a new @'PWData'@
+newPWData
+  :: RandomGen g
+  => g
+  -- ^ the random generator to use
+  -> (PWData, g)
+  -- ^ the result and new random generator
+newPWData g = (result, g') where
+  result = PWData newPWPolicy salt
+  (salt, g') = newSalt g
 
 -- | builds a new salt
 newSalt
