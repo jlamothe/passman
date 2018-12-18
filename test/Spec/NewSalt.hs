@@ -24,12 +24,21 @@ module Spec.NewSalt (tests) where
 
 import qualified Data.ByteString as B
 import System.Random (mkStdGen)
-import Test.HUnit (Test(..), (~?=))
+import Test.HUnit (Test(..), assertBool, (~?=))
 
 import Password
 
-tests = TestLabel "newSalt" $ B.length salt ~?= 256 where
-  (salt, _) = newSalt g
-  g = mkStdGen 1
+tests = TestLabel "newSalt" $ TestList
+  [ testLength salt
+  , testDiff salt salt'
+  ] where
+    (salt, g') = newSalt g
+    (salt', _) = newSalt g'
+    g = mkStdGen 1
+
+testLength x = TestLabel "salt length" $ B.length x ~?= 256
+
+testDiff x y = TestLabel "different generators" $ TestCase $
+  assertBool "salts match" $ x /= y
 
 --jl
