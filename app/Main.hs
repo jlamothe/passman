@@ -30,28 +30,46 @@ import Control.Monad (join)
 import Control.Monad.Trans.Class (lift)
 import Data.Foldable (mapM_)
 import Data.Maybe (fromJust)
-import qualified System.Console.HCL as R
+import System.Console.HCL
+  ( Request (..)
+  , prompt
+  , reqDefault
+  , reqFail
+  , reqIO
+  , reqMenu
+  , reqPassword
+  , required
+  , runRequest
+  )
+import System.Random (StdGen, getStdGen)
+
+import Password
 
 data Status = Status
-  { _masterPass :: String
+  { _gen        :: StdGen
+  , _masterPass :: String
+  , _database   :: PWDatabase
   }
 
 makeLenses ''Status
 
 main :: IO ()
-main = R.runRequest setup >>= mapM_ (S.evalStateT mainMenu)
+main = runRequest setup >>= mapM_ (S.evalStateT mainMenu)
 
-setup :: R.Request Status
-setup = fmap Status getMasterPass
+setup :: Request Status
+setup = do
+  g <- reqIO getStdGen
+  mp <- getMasterPass
+  return $ Status g mp newPWDatabase
 
-getMasterPass :: R.Request String
+getMasterPass :: Request String
 getMasterPass = do
-  p1 <- R.required $ R.prompt "master password: " R.reqPassword
-  p2 <- R.required $ R.prompt "confirm master password: " R.reqPassword
+  p1 <- required $ prompt "master password: " reqPassword
+  p2 <- required $ prompt "confirm master password: " reqPassword
   if p1 /= p2
     then do
-      R.reqIO $ putStrLn "passwords do not match"
-      R.reqFail
+      reqIO $ putStrLn "passwords do not match"
+      reqFail
     else return p1
 
 mainMenu :: S.StateT Status IO ()
@@ -65,7 +83,7 @@ mainMenu =
 changeMasterPass :: S.StateT Status IO ()
 changeMasterPass = do
   oldP <- S.gets $ view masterPass
-  newP <- req $ R.reqDefault getMasterPass oldP
+  newP <- req $ reqDefault getMasterPass oldP
   S.modify $ set masterPass newP
   mainMenu
 
@@ -73,7 +91,7 @@ lockSession :: S.StateT Status IO ()
 lockSession = do
   lift $ putStrLn "\nsession locked"
   pass <- S.gets $ view masterPass
-  mx <- lift $ R.runRequest $ R.prompt "password: " R.reqPassword
+  mx <- lift $ runRequest $ prompt "password: " reqPassword
   case mx of
     Nothing -> lockSession
     Just x  -> if x == pass
@@ -87,16 +105,16 @@ menu
   :: String
   -> [(String, S.StateT Status IO a)]
   -> S.StateT Status IO a
-menu title = reqState . R.prompt ("\n*** " ++ title ++ " ***") .
-  R.reqMenu . map menuItem
+menu title = reqState . prompt ("\n*** " ++ title ++ " ***") .
+  reqMenu . map menuItem
 
-menuItem :: (String, a) -> (String, R.Request a)
+menuItem :: (String, a) -> (String, Request a)
 menuItem (str, x) = (str, return x)
 
-reqState :: R.Request (S.StateT s IO a) -> S.StateT s IO a
+reqState :: Request (S.StateT s IO a) -> S.StateT s IO a
 reqState = join . req
 
-req :: R.Request a -> S.StateT s IO a
-req = lift . fmap fromJust . R.runRequest . R.required
+req :: Request a -> S.StateT s IO a
+req = lift . fmap fromJust . runRequest . required
 
 --jl
