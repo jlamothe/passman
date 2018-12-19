@@ -36,7 +36,7 @@ module Password (
   -- ** Default Instances
   newPWDatabase, newPWData, newPWPolicy, newPWSalt,
   -- ** Validations
-  validatePWData, validatePWPolicy
+  validatePWDatabase, validatePWData, validatePWPolicy
   ) where
 
 import Control.Lens (makeLenses, (^.))
@@ -112,6 +112,14 @@ newPWSalt
 newPWSalt g = (result, g2) where
   result = B.pack $ take 256 $ randoms g1
   (g1, g2) = split g
+
+-- | validates a password database
+validatePWDatabase
+  :: PWDatabase
+  -- ^ the database to be validated
+  -> Bool
+  -- ^ @"True"@ if valid; @"False"@ otherwise
+validatePWDatabase = all validatePWData
 
 -- | validates password data
 validatePWData

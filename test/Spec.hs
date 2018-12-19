@@ -31,6 +31,7 @@ import qualified Spec.NewPWDatabase as NewPWDatabase
 import qualified Spec.NewPWPolicy as NewPWPolicy
 import qualified Spec.NewPWSalt as NewPWSalt
 import qualified Spec.ValidatePWData as ValidatePWData
+import qualified Spec.ValidatePWDatabase as ValidatePWDatabase
 import qualified Spec.ValidatePWPolicy as ValidatePWPolicy
 
 main = do
@@ -45,6 +46,7 @@ tests = TestList
   , NewPWSalt.tests
   , ValidatePWPolicy.tests
   , ValidatePWData.tests
+  , ValidatePWDatabase.tests
   ]
 
 --jl
