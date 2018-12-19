@@ -36,7 +36,12 @@ module Password (
   -- ** Default Instances
   newPWDatabase, newPWData, newPWPolicy, newPWSalt,
   -- ** Validations
-  validatePWDatabase, validatePWData, validatePWPolicy
+  validatePWDatabase, validatePWData, validatePWPolicy,
+  -- * Functions
+  -- ** Password Generator
+  pwGenerate,
+  -- ** Password Checkers
+  pwCountUpper, pwCountLower, pwCountDigits, pwCountSpecial
   ) where
 
 import Control.Lens (makeLenses, (^.))
@@ -147,5 +152,48 @@ validatePWPolicy x = and
   ] where
     needed = x^.pwUpper + x^.pwLower + x^.pwDigits + special
     special = fromMaybe 0 $ x^.pwSpecial
+
+-- | generates a password
+pwGenerate
+  :: String
+  -- ^ the master password
+  -> PWData
+  -- ^ the password parameters
+  -> Maybe String
+  -- ^ the resulting password, if possible; @"Nothing"@ if the data is
+  -- invalid
+pwGenerate = undefined
+
+-- | counts lower case characters in a password
+pwCountLower
+  :: String
+  -- ^ the password
+  -> Int
+  -- ^ the count
+pwCountLower = undefined
+
+-- | counts digits in a password
+pwCountDigits
+  :: String
+  -- ^ the password
+  -> Int
+  -- ^ the count
+pwCountDigits = undefined
+
+-- | counts special characters in a password
+pwCountSpecial
+  :: String
+  -- ^ the password
+  -> Int
+  -- ^ the count
+pwCountSpecial = undefined
+
+-- | counts upper case characters in a password
+pwCountUpper
+  :: String
+  -- ^ the password
+  -> Int
+  -- ^ the count
+pwCountUpper = undefined
 
 --jl
