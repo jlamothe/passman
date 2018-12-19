@@ -44,7 +44,7 @@ module Password (
   pwCountUpper, pwCountLower, pwCountDigits, pwCountSpecial
   ) where
 
-import Control.Lens (makeLenses, (^.))
+import Control.Lens (makeLenses, over, (^.))
 import Data.Char (isUpper, isLower, isDigit, isAlphaNum)
 import qualified Data.ByteString as B
 import qualified Data.Map as M
@@ -162,7 +162,10 @@ pwGenerate
   -> Maybe String
   -- ^ the resulting password, if possible; @"Nothing"@ if the data is
   -- invalid
-pwGenerate = undefined
+pwGenerate pw d = if validatePWData d
+  then Just $ mkPass (mkPool seed) (d^.pwPolicy)
+  else Nothing
+  where seed = mkSeed pw d
 
 -- | counts lower case characters in a password
 pwCountLower
@@ -195,5 +198,38 @@ pwCountUpper
   -> Int
   -- ^ the count
 pwCountUpper = undefined
+
+mkPass :: String -> PWPolicy -> String
+mkPass (x:xs) p = let p' = nextPolicy x p in
+  if p^.pwLength <= 0
+  then ""
+  else if validatePWPolicy p'
+  then x : mkPass xs p'
+  else mkPass xs p
+
+mkPool :: B.ByteString -> String
+mkPool s = toB64 hash ++ mkPool hash where
+  hash = mkHash s
+
+mkSeed :: String -> PWData -> B.ByteString
+mkSeed pw d = toUTF8 pw `B.append` (d^.pwSalt)
+
+mkHash :: B.ByteString -> B.ByteString
+mkHash = undefined
+
+nextPolicy :: Char -> PWPolicy -> PWPolicy
+nextPolicy x p = over pwLength pred $
+  over lens pred p where
+    lens
+      | isUpper x = pwUpper
+      | isLower x = pwLower
+      | isDigit x = pwDigits
+      | otherwise = pwSpecial . traverse
+
+toUTF8 :: String -> B.ByteString
+toUTF8 = undefined
+
+toB64 :: B.ByteString -> String
+toB64 = undefined
 
 --jl
