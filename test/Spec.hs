@@ -48,7 +48,7 @@ tests = TestList
   , ValidatePWDatabase.tests
   , ValidatePWData.tests
   , ValidatePWPolicy.tests
-  --, PWGenerate.tests
+  , PWGenerate.tests
   ]
 
 --jl
