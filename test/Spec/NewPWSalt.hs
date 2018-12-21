@@ -36,7 +36,7 @@ tests = TestLabel "newPWSalt" $ TestList
     (salt', _) = newPWSalt g'
     g = mkStdGen 1
 
-testLength x = TestLabel "salt length" $ B.length x ~?= 256
+testLength x = TestLabel "salt length" $ B.length x ~?= 32
 
 testDiff x y = TestLabel "different generators" $ TestCase $
   assertBool "salts match" $ x /= y

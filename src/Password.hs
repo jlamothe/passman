@@ -115,7 +115,7 @@ newPWSalt
   -> (PWSalt, g)
   -- ^ the result and new random generator
 newPWSalt g = (result, g2) where
-  result = B.pack $ take 256 $ randoms g1
+  result = B.pack $ take 32 $ randoms g1
   (g1, g2) = split g
 
 -- | validates a password database
