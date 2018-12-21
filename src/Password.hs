@@ -50,6 +50,8 @@ import Data.Char (isUpper, isLower, isDigit, isAlphaNum)
 import Data.Digest.Pure.SHA
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
+import qualified Data.Text.Lazy as T
+import Data.Text.Lazy.Encoding (encodeUtf8)
 import System.Random (RandomGen, randoms, split)
 
 -- | a mapping of service names to password data
@@ -240,7 +242,7 @@ nextPolicy x p = over pwLength pred $
     dec l = over l (max 0 . pred) p
 
 toUTF8 :: String -> B.ByteString
-toUTF8 = undefined
+toUTF8 = encodeUtf8 . T.pack
 
 toB64 :: B.ByteString -> String
 toB64 = undefined
