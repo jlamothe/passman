@@ -44,7 +44,7 @@ module Password (
   pwCountUpper, pwCountLower, pwCountDigits, pwCountSpecial
   ) where
 
-import Control.Lens (makeLenses, over, (^.))
+import Control.Lens (makeLenses, over, set, (^.))
 import Data.Char (isUpper, isLower, isDigit, isAlphaNum)
 import qualified Data.ByteString as B
 import qualified Data.Map as M
@@ -220,12 +220,17 @@ mkHash = undefined
 
 nextPolicy :: Char -> PWPolicy -> PWPolicy
 nextPolicy x p = over pwLength pred $
-  over lens pred p where
-    lens
-      | isUpper x = pwUpper
-      | isLower x = pwLower
-      | isDigit x = pwDigits
-      | otherwise = pwSpecial . traverse
+  if isUpper x
+  then dec pwUpper
+  else if isLower x
+  then dec pwLower
+  else if isDigit x
+  then dec pwDigits
+  else case p^.pwSpecial of
+    Nothing -> set pwSpecial (Just (-1)) p
+    Just x  -> set pwSpecial (Just $ pred x) p
+  where
+    dec l = over l (max 0 . pred) p
 
 toUTF8 :: String -> B.ByteString
 toUTF8 = undefined
