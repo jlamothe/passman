@@ -45,8 +45,9 @@ module Password (
   ) where
 
 import Control.Lens (makeLenses, over, set, (^.))
-import Data.Char (isUpper, isLower, isDigit, isAlphaNum)
 import qualified Data.ByteString.Lazy as B
+import Data.Char (isUpper, isLower, isDigit, isAlphaNum)
+import Data.Digest.Pure.SHA
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
 import System.Random (RandomGen, randoms, split)
@@ -219,7 +220,10 @@ mkSeed :: String -> PWData -> B.ByteString
 mkSeed pw d = toUTF8 pw `B.append` (d^.pwSalt)
 
 mkHash :: B.ByteString -> B.ByteString
-mkHash = undefined
+mkHash = raw . show . sha256 where
+  raw (x:y:xs) = read ("0x" ++ [x] ++ [y]) `B.cons` raw xs
+  raw [_] = error "odd number of hex digits in hash"
+  raw "" = B.empty
 
 nextPolicy :: Char -> PWPolicy -> PWPolicy
 nextPolicy x p = over pwLength pred $

@@ -28,6 +28,8 @@ dependencies:
 
 library:
   source-dirs: src
+  dependencies:
+  - SHA
 
 executables:
   passman:
