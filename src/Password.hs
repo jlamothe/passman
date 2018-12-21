@@ -231,7 +231,7 @@ nextPolicy x p = over pwLength pred $
   then dec pwDigits
   else case p^.pwSpecial of
     Nothing -> set pwSpecial (Just (-1)) p
-    Just x  -> set pwSpecial (Just $ pred x) p
+    Just _  -> dec $ pwSpecial . traverse
   where
     dec l = over l (max 0 . pred) p
 
