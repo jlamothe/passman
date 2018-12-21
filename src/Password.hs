@@ -167,13 +167,21 @@ pwGenerate pw d = if validatePWData d
   else Nothing
   where seed = mkSeed pw d
 
+-- | counts upper case characters in a password
+pwCountUpper
+  :: String
+  -- ^ the password
+  -> Int
+  -- ^ the count
+pwCountUpper = length . filter isUpper
+
 -- | counts lower case characters in a password
 pwCountLower
   :: String
   -- ^ the password
   -> Int
   -- ^ the count
-pwCountLower = undefined
+pwCountLower = length . filter isLower
 
 -- | counts digits in a password
 pwCountDigits
@@ -181,7 +189,7 @@ pwCountDigits
   -- ^ the password
   -> Int
   -- ^ the count
-pwCountDigits = undefined
+pwCountDigits = length . filter isDigit
 
 -- | counts special characters in a password
 pwCountSpecial
@@ -189,15 +197,10 @@ pwCountSpecial
   -- ^ the password
   -> Int
   -- ^ the count
-pwCountSpecial = undefined
+pwCountSpecial = length . filter isSpecial
 
--- | counts upper case characters in a password
-pwCountUpper
-  :: String
-  -- ^ the password
-  -> Int
-  -- ^ the count
-pwCountUpper = undefined
+isSpecial :: Char -> Bool
+isSpecial x = not $ isUpper x || isLower x || isDigit x
 
 mkPass :: String -> PWPolicy -> String
 mkPass (x:xs) p = let p' = nextPolicy x p in
