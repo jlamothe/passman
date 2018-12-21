@@ -46,7 +46,7 @@ module Password (
 
 import Control.Lens (makeLenses, over, set, (^.))
 import Data.Char (isUpper, isLower, isDigit, isAlphaNum)
-import qualified Data.ByteString as B
+import qualified Data.ByteString.Lazy as B
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
 import System.Random (RandomGen, randoms, split)

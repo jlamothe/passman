@@ -23,7 +23,7 @@ License along with this program.  If not, see
 module Spec.ValidatePWData (tests) where
 
 import Control.Lens (set)
-import qualified Data.ByteString as B
+import qualified Data.ByteString.Lazy as B
 import System.Random (mkStdGen)
 import Test.HUnit (Test (..), (~?=))
 

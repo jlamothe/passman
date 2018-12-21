@@ -22,7 +22,7 @@ License along with this program.  If not, see
 
 module Spec.NewPWSalt (tests) where
 
-import qualified Data.ByteString as B
+import qualified Data.ByteString.Lazy as B
 import System.Random (mkStdGen)
 import Test.HUnit (Test(..), assertBool, (~?=))
 
