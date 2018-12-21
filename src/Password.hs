@@ -208,8 +208,9 @@ mkPass (x:xs) p = let p' = nextPolicy x p in
   else mkPass xs p
 
 mkPool :: B.ByteString -> String
-mkPool s = toB64 hash ++ mkPool hash where
-  hash = mkHash s
+mkPool = toB64 . raw where
+  raw x = let x' = mkHash x in
+    x' `B.append` raw x
 
 mkSeed :: String -> PWData -> B.ByteString
 mkSeed pw d = toUTF8 pw `B.append` (d^.pwSalt)
