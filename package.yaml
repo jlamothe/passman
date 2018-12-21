@@ -29,6 +29,7 @@ dependencies:
 library:
   source-dirs: src
   dependencies:
+  - base64-bytestring
   - SHA
   - text
 

@@ -46,12 +46,13 @@ module Password (
 
 import Control.Lens (makeLenses, over, set, (^.))
 import qualified Data.ByteString.Lazy as B
+import qualified Data.ByteString.Base64.Lazy as B64
 import Data.Char (isUpper, isLower, isDigit, isAlphaNum)
 import Data.Digest.Pure.SHA
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
 import qualified Data.Text.Lazy as T
-import Data.Text.Lazy.Encoding (encodeUtf8)
+import Data.Text.Lazy.Encoding (decodeUtf8, encodeUtf8)
 import System.Random (RandomGen, randoms, split)
 
 -- | a mapping of service names to password data
@@ -245,6 +246,6 @@ toUTF8 :: String -> B.ByteString
 toUTF8 = encodeUtf8 . T.pack
 
 toB64 :: B.ByteString -> String
-toB64 = undefined
+toB64 = T.unpack . decodeUtf8 . B64.encode
 
 --jl
