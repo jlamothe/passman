@@ -24,24 +24,29 @@ License along with this program.  If not, see
 
 module Main where
 
-import Control.Lens (makeLenses, set, view)
+import Control.Applicative ((<|>))
+import Control.Lens (makeLenses, over, set, view, (^.))
 import qualified Control.Monad.Trans.State as S
-import Control.Monad (join)
+import Control.Monad (join, when)
 import Control.Monad.Trans.Class (lift)
 import Data.Foldable (mapM_)
 import Data.Maybe (fromJust)
 import System.Console.HCL
   ( Request (..)
   , prompt
+  , reqAgree
   , reqDefault
   , reqFail
+  , reqIf
+  , reqInt
   , reqIO
   , reqMenu
   , reqPassword
+  , reqResp
   , required
   , runRequest
   )
-import System.Random (StdGen, getStdGen)
+import System.Random (RandomGen (..), StdGen, getStdGen)
 
 import Password
 
@@ -52,6 +57,17 @@ data Status = Status
   }
 
 makeLenses ''Status
+
+instance RandomGen Status where
+  next s = (x, s') where
+    (x, g') = next g
+    s' = set gen g' s
+    g = s^.gen
+  split s = (s1, s2) where
+    s1 = set gen g1 s
+    s2 = set gen g2 s
+    (g1, g2) = split g
+    g = s^.gen
 
 main :: IO ()
 main = runRequest setup >>= mapM_ (S.evalStateT mainMenu)
@@ -75,10 +91,26 @@ getMasterPass = do
 mainMenu :: S.StateT Status IO ()
 mainMenu =
   menu "Main Menu"
-    [ ( "change master password", changeMasterPass )
+    [ ( "add a password",         addPassword      )
+    , ( "change master password", changeMasterPass )
     , ( "lock session",           lockSession      )
     , ( "quit",                   quit             )
     ]
+
+addPassword :: S.StateT Status IO ()
+addPassword = do
+  svc <- req $ prompt "service name: " reqResp
+  db <- S.gets $ view database
+  if pwHasService svc db
+    then req (confirm "service exists - overwrite?") >>= flip when (addPassword' svc)
+    else addPassword' svc
+  mainMenu
+
+addPassword' :: String -> S.StateT Status IO ()
+addPassword' x = do
+  d <- buildData
+  S.modify $ over database $ pwSetService x d
+  showPass x
 
 changeMasterPass :: S.StateT Status IO ()
 changeMasterPass = do
@@ -101,6 +133,61 @@ lockSession = do
 quit :: S.StateT Status IO ()
 quit = return ()
 
+showPass :: String -> S.StateT Status IO ()
+showPass x = do
+  db <- S.gets $ view database
+  case pwGetService x db of
+    Nothing -> lift $ putStrLn "service not found"
+    Just d  -> do
+      pw <- S.gets $ view masterPass
+      lift $ putStrLn $ case pwGenerate pw d of
+        Nothing -> "invalid password data"
+        Just pw -> "password for " ++ x ++ ": " ++ pw
+
+buildData :: S.StateT Status IO PWData
+buildData = do
+  d <- S.StateT $ return . newPWData
+  req $ reqIf (confirm "would you like to change the default policy?")
+    (do
+      let p = d^.pwPolicy
+      p <- editPolicy p <|> do
+        reqIO $ putStrLn "invalid password policy - using default"
+        return p
+      return $ set pwPolicy p d)
+    (return d)
+
+editPolicy :: PWPolicy -> Request PWPolicy
+editPolicy p = if validatePWPolicy p
+  then do
+    p <- edit "length" (p^.pwLength) pwLength p
+    p <- edit "min upper case"  (p^.pwUpper) pwUpper p
+    p <- edit "min lower case" (p^.pwLower) pwLower p
+    p <- edit "min digits" (p^.pwDigits) pwDigits p
+    p <- special p
+    if validatePWPolicy p
+      then return p
+      else reqFail
+  else reqFail
+  where
+    edit l v t p = reqIf
+      (confirm $ l ++ " is " ++ show v ++ "\nchange?")
+      (do
+        x <- required $ prompt ("new " ++ l ++ ": ") reqInt
+        return $ set t v p)
+      (return p)
+    special p = do
+      reqIO $ putStrLn $ "special chars are currently " ++
+        (case p^.pwSpecial of
+          Nothing -> "not "
+          Just _  -> "") ++ "allowed"
+      reqIf (confirm "allow special chars?")
+        (case p^.pwSpecial of
+          Nothing -> do
+            x <- required $ prompt "min special chars: " reqInt
+            return $ set pwSpecial (Just x) p
+          Just x -> edit "min special chars" x (pwSpecial.traverse) p)
+        (return $ set pwSpecial Nothing p)
+
 menu
   :: String
   -> [(String, S.StateT Status IO a)]
@@ -116,5 +203,11 @@ reqState = join . req
 
 req :: Request a -> S.StateT s IO a
 req = lift . fmap fromJust . runRequest . required
+
+tryReq :: Request a -> S.StateT s IO (Maybe a)
+tryReq = lift . runRequest
+
+confirm :: String -> Request Bool
+confirm x = required $ prompt (x ++ " (y/n): ") $ reqAgree Nothing reqResp
 
 --jl

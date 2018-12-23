@@ -41,7 +41,9 @@ module Password (
   -- ** Password Generator
   pwGenerate,
   -- ** Password Checkers
-  pwCountUpper, pwCountLower, pwCountDigits, pwCountSpecial
+  pwCountUpper, pwCountLower, pwCountDigits, pwCountSpecial,
+  -- ** Database Functions
+  pwHasService, pwSetService, pwGetService
   ) where
 
 import Control.Lens (makeLenses, over, set, (^.))
@@ -202,6 +204,39 @@ pwCountSpecial
   -> Int
   -- ^ the count
 pwCountSpecial = length . filter isSpecial
+
+-- | checks to see if a service is in the database
+pwHasService
+  :: String
+  -- ^ the service name
+  -> PWDatabase
+  -- ^ the database to check
+  -> Bool
+  -- ^ returns @"True"@ if found; @"False"@ otherwise
+pwHasService = undefined
+
+-- | adds a service to the database, or overwrites an existing one
+pwSetService
+  :: String
+  -- ^ the service name
+  -> PWData
+  -- ^ the password data for the service
+  -> PWDatabase
+  -- ^ the database to add to
+  -> PWDatabase
+  -- ^ the resulting database
+pwSetService = undefined
+
+-- | attempts to get a service from the database
+pwGetService
+  :: String
+  -- ^ the service name
+  -> PWDatabase
+  -- ^ the database to check
+  -> Maybe PWData
+  -- ^ the service's password data, or @"Nothing"@ if the service is
+  -- not found
+pwGetService = undefined
 
 isSpecial :: Char -> Bool
 isSpecial x = not $ isUpper x || isLower x || isDigit x
