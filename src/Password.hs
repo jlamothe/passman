@@ -213,7 +213,7 @@ pwHasService
   -- ^ the database to check
   -> Bool
   -- ^ returns @"True"@ if found; @"False"@ otherwise
-pwHasService = undefined
+pwHasService x db = elem x $ M.keys db
 
 -- | adds a service to the database, or overwrites an existing one
 pwSetService
