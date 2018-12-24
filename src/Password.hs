@@ -225,7 +225,7 @@ pwSetService
   -- ^ the database to add to
   -> PWDatabase
   -- ^ the resulting database
-pwSetService = undefined
+pwSetService = M.insert
 
 -- | attempts to get a service from the database
 pwGetService

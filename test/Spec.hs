@@ -32,6 +32,7 @@ import qualified Spec.NewPWPolicy as NewPWPolicy
 import qualified Spec.NewPWSalt as NewPWSalt
 import qualified Spec.PWGenerate as PWGenerate
 import qualified Spec.PWHasService as PWHasService
+import qualified Spec.PWSetService as PWSetService
 import qualified Spec.ValidatePWData as ValidatePWData
 import qualified Spec.ValidatePWDatabase as ValidatePWDatabase
 import qualified Spec.ValidatePWPolicy as ValidatePWPolicy
@@ -51,6 +52,7 @@ tests = TestList
   , ValidatePWPolicy.tests
   , PWGenerate.tests
   , PWHasService.tests
+  , PWSetService.tests
   ]
 
 --jl
