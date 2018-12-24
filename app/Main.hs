@@ -174,7 +174,7 @@ editPolicy p = if validatePWPolicy p
     edit l v t p = reqIf
       (confirm $ l ++ " is " ++ show v ++ "\nchange?")
       (do
-        x <- required $ prompt ("new " ++ l ++ ": ") reqInt
+        v <- required $ prompt ("new " ++ l ++ ": ") reqInt
         return $ set t v p)
       (return p)
     special p = do
