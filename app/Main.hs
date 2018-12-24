@@ -135,6 +135,7 @@ quit = return ()
 
 showPass :: String -> S.StateT Status IO ()
 showPass x = do
+  lift $ putStrLn ""
   db <- S.gets $ view database
   case pwGetService x db of
     Nothing -> lift $ putStrLn "service not found"
