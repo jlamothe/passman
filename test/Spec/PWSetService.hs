@@ -35,7 +35,7 @@ addToEmpty = tests' "empty database" newPWDatabase 1
 
 addToNonEmpty = tests' "non-empty database" nonEmpty 3
 
-addToExisting = tests' "exiating database" existing 3
+addToExisting = tests' "existing database" existing 3
 
 tests' label db size = TestLabel label $ TestList
   [ dbSize result size
