@@ -156,6 +156,7 @@ buildData = do
       return $ set pwPolicy p d)
     (return d)
 
+-- TODO: refactor this monstrosity
 editPolicy :: PWPolicy -> Request PWPolicy
 editPolicy p = if validatePWPolicy p
   then do
