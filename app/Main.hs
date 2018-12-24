@@ -92,6 +92,7 @@ mainMenu :: S.StateT Status IO ()
 mainMenu =
   menu "Main Menu"
     [ ( "add a password",         addPassword      )
+    , ( "view/edit a password",   viewEditPass     )
     , ( "change master password", changeMasterPass )
     , ( "lock session",           lockSession      )
     , ( "quit",                   quit             )
@@ -111,6 +112,33 @@ addPassword' x = do
   d <- buildData
   S.modify $ over database $ pwSetService x d
   showPass x
+
+viewEditPass :: S.StateT Status IO ()
+viewEditPass = menu "View/Edit Password"
+  [ ( "search servives", searchServ )
+  , ( "list services",   listServ   )
+  , ( "cancel",          mainMenu   )
+  ]
+
+searchServ :: S.StateT Status IO ()
+searchServ = do
+  svc <- req $ prompt "service name: " reqResp
+  db  <- S.gets $ view database
+  selectServ $ pwSearch svc db
+
+listServ :: S.StateT Status IO ()
+listServ = S.gets (view database) >>= selectServ . pwSearch ""
+
+selectServ :: [String] -> S.StateT Status IO ()
+selectServ xs = menu "Select Service" $
+  ("cancel", mainMenu) :
+  map (\x -> (x, viewEdit x)) xs
+
+viewEdit :: String -> S.StateT Status IO ()
+viewEdit x = menu x
+  [ ( "show password", showPass x >> viewEdit x )
+  , ( "cancel",        mainMenu                 )
+  ]
 
 changeMasterPass :: S.StateT Status IO ()
 changeMasterPass = do

@@ -43,7 +43,7 @@ module Password (
   -- ** Password Checkers
   pwCountUpper, pwCountLower, pwCountDigits, pwCountSpecial,
   -- ** Database Functions
-  pwHasService, pwSetService, pwGetService
+  pwHasService, pwSetService, pwGetService, pwSearch
   ) where
 
 import Control.Lens (makeLenses, over, set, (^.))
@@ -237,6 +237,16 @@ pwGetService
   -- ^ the service's password data, or @"Nothing"@ if the service is
   -- not found
 pwGetService = M.lookup
+
+-- | searches for a service
+pwSearch
+  :: String
+  -- ^ the search string
+  -> PWDatabase
+  -- ^ the database to search
+  -> [String]
+  -- ^ the matching service names
+pwSearch = undefined
 
 isSpecial :: Char -> Bool
 isSpecial x = not $ isUpper x || isLower x || isDigit x
