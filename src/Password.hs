@@ -236,7 +236,7 @@ pwGetService
   -> Maybe PWData
   -- ^ the service's password data, or @"Nothing"@ if the service is
   -- not found
-pwGetService = undefined
+pwGetService = M.lookup
 
 isSpecial :: Char -> Bool
 isSpecial x = not $ isUpper x || isLower x || isDigit x
