@@ -115,7 +115,7 @@ addPassword' x = do
 
 viewEditPass :: S.StateT Status IO ()
 viewEditPass = menu "View/Edit Password"
-  [ ( "search servives", searchServ )
+  [ ( "search services", searchServ )
   , ( "list services",   listServ   )
   , ( "cancel",          mainMenu   )
   ]
