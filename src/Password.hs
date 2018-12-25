@@ -41,7 +41,7 @@ module Password (
   -- ** Password Generator
   pwGenerate,
   -- ** Password Checkers
-  pwCountUpper, pwCountLower, pwCountDigits, pwCountSpecial,
+  pwCountUpper, pwCountLower, pwCountDigits, pwCountSpecial, pwCount,
   -- ** Database Functions
   pwHasService, pwSetService, pwGetService, pwSearch
   ) where
@@ -179,7 +179,7 @@ pwCountUpper
   -- ^ the password
   -> Int
   -- ^ the count
-pwCountUpper = length . filter isUpper
+pwCountUpper = pwCount isUpper
 
 -- | counts lower case characters in a password
 pwCountLower
@@ -187,7 +187,7 @@ pwCountLower
   -- ^ the password
   -> Int
   -- ^ the count
-pwCountLower = length . filter isLower
+pwCountLower = pwCount isLower
 
 -- | counts digits in a password
 pwCountDigits
@@ -195,7 +195,7 @@ pwCountDigits
   -- ^ the password
   -> Int
   -- ^ the count
-pwCountDigits = length . filter isDigit
+pwCountDigits = pwCount isDigit
 
 -- | counts special characters in a password
 pwCountSpecial
@@ -203,7 +203,17 @@ pwCountSpecial
   -- ^ the password
   -> Int
   -- ^ the count
-pwCountSpecial = length . filter isSpecial
+pwCountSpecial = pwCount isSpecial
+
+-- | counts characters matching a specific constraint
+pwCount
+  :: (Char -> Bool)
+  -- ^ the constraint
+  -> String
+  -- ^ the string being checked
+  -> Int
+  -- ^ the count
+pwCount f = length . filter f
 
 -- | checks to see if a service is in the database
 pwHasService
