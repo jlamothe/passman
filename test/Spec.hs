@@ -33,6 +33,7 @@ import qualified Spec.NewPWSalt as NewPWSalt
 import qualified Spec.PWGenerate as PWGenerate
 import qualified Spec.PWGetService as PWGetService
 import qualified Spec.PWHasService as PWHasService
+import qualified Spec.PWSearch as PWSearch
 import qualified Spec.PWSetService as PWSetService
 import qualified Spec.ValidatePWData as ValidatePWData
 import qualified Spec.ValidatePWDatabase as ValidatePWDatabase
@@ -55,6 +56,7 @@ tests = TestList
   , PWHasService.tests
   , PWSetService.tests
   , PWGetService.tests
+  , PWSearch.tests
   ]
 
 --jl

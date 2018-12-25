@@ -49,7 +49,7 @@ module Password (
 import Control.Lens (makeLenses, over, set, (^.))
 import qualified Data.ByteString.Lazy as B
 import qualified Data.ByteString.Base64.Lazy as B64
-import Data.Char (isUpper, isLower, isDigit, isAlphaNum)
+import Data.Char (isUpper, isLower, isDigit, isAlphaNum, toLower)
 import Data.Digest.Pure.SHA
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
@@ -246,7 +246,8 @@ pwSearch
   -- ^ the database to search
   -> [String]
   -- ^ the matching service names
-pwSearch = undefined
+pwSearch x db = filter (\y -> l y `contains` l x) $ M.keys db where
+  l = map toLower
 
 isSpecial :: Char -> Bool
 isSpecial x = not $ isUpper x || isLower x || isDigit x
@@ -292,5 +293,19 @@ toUTF8 = encodeUtf8 . T.pack
 
 toB64 :: B.ByteString -> String
 toB64 = T.unpack . decodeUtf8 . B64.encode
+
+contains :: String -> String -> Bool
+_ `contains` "" = True
+"" `contains` _ = False
+xs@(x:xs') `contains` ys
+  | xs `startsWith` ys = True
+  | otherwise = xs' `contains` ys
+
+startsWith :: String -> String -> Bool
+_ `startsWith` "" = True
+"" `startsWith` _ = False
+(x:xs) `startsWith` (y:ys)
+  | x == y = xs `startsWith` ys
+  | otherwise = False
 
 --jl
