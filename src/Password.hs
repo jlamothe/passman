@@ -260,7 +260,7 @@ pwSearch x db = filter (\y -> l y `contains` l x) $ M.keys db where
   l = map toLower
 
 isSpecial :: Char -> Bool
-isSpecial x = not $ isUpper x || isLower x || isDigit x
+isSpecial = not . isAlphaNum
 
 mkPass :: String -> PWPolicy -> String
 mkPass (x:xs) p = let p' = nextPolicy x p in
