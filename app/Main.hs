@@ -199,12 +199,10 @@ editPolicy p = if validatePWPolicy p
       else reqFail
   else reqFail
   where
-    edit l v t p = reqIf
-      (confirm $ l ++ " is " ++ show v ++ "\nchange?")
-      (do
-        v <- required $ prompt ("new " ++ l ++ ": ") reqInt
-        return $ set t v p)
-      (return p)
+    edit l v t p = do
+      v <- reqDefault
+        (prompt ("new " ++ l ++ " (default " ++ show v ++ "): ") reqInt) v
+      return $ set t v p
     special p = do
       reqIO $ putStrLn $ "special chars are currently " ++
         (case p^.pwSpecial of
