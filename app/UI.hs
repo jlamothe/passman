@@ -96,7 +96,7 @@ searchServ = do
     []  -> do
       lift $ putStrLn "\nservice not found"
       mainMenu
-    [x] -> viewEditServ x
+    [x] -> servMenu x
     xs  -> selectServ xs
 
 listServ :: S.StateT Status IO ()
@@ -104,13 +104,19 @@ listServ = S.gets (view database) >>= selectServ . pwSearch ""
 
 selectServ :: [String] -> S.StateT Status IO ()
 selectServ xs = menu "Select Service" $
-  map (\x -> (x, viewEditServ x)) xs ++
+  map (\x -> (x, servMenu x)) xs ++
   [("(cancel)", mainMenu)]
 
-viewEditServ :: String -> S.StateT Status IO ()
-viewEditServ x = menu x
-  [ ( "show password", showPass x >> viewEditServ x )
-  , ( "cancel",        mainMenu                     )
+servMenu :: String -> S.StateT Status IO ()
+servMenu x = menu x
+  [ ( "show password", showPass x >> servMenu x )
+  , ( "edit password", editPassMenu x           )
+  , ( "cancel",        mainMenu                 )
+  ]
+
+editPassMenu :: String -> S.StateT Status IO ()
+editPassMenu x = menu (x ++ " : Edit Password")
+  [ ( "cancel", servMenu x )
   ]
 
 changeMasterPass :: S.StateT Status IO ()
