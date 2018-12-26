@@ -20,26 +20,32 @@ License along with this program.  If not, see
 
 -}
 
-module Main where
+{-# LANGUAGE TemplateHaskell #-}
 
-import Control.Monad (mapM_)
-import Control.Monad.Trans.State as S
-import System.Console.HCL (Request, reqIO, runRequest)
-import System.Random (getStdGen)
+module Types (Status (Status), gen, masterPass, database) where
+
+import Control.Lens (makeLenses, set, (^.))
+import System.Random (RandomGen (next, split), StdGen)
 
 import Password
 
-import Types
-import UI
-import Util
+data Status = Status
+  { _gen        :: StdGen
+  , _masterPass :: String
+  , _database   :: PWDatabase
+  }
 
-main :: IO ()
-main = runRequest setup >>= mapM_ (S.evalStateT mainMenu)
+makeLenses ''Status
 
-setup :: Request Status
-setup = do
-  g <- reqIO getStdGen
-  mp <- getMasterPass
-  return $ Status g mp newPWDatabase
+instance RandomGen Status where
+  next s = (x, s') where
+    (x, g') = next g
+    s' = set gen g' s
+    g = s^.gen
+  split s = (s1, s2) where
+    s1 = set gen g1 s
+    s2 = set gen g2 s
+    (g1, g2) = split g
+    g = s^.gen
 
 --jl
