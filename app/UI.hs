@@ -116,8 +116,21 @@ servMenu x = menu x
 
 editPassMenu :: String -> S.StateT Status IO ()
 editPassMenu x = menu (x ++ " : Edit Password")
-  [ ( "cancel", servMenu x )
+  [ ( "generate new password", changeSalt x )
+  , ( "cancel",                servMenu x   )
   ]
+
+changeSalt :: String -> S.StateT Status IO ()
+changeSalt x = do
+  db <- S.gets $ view database
+  case pwGetService x db of
+    Nothing   -> mainMenu
+    Just serv -> do
+      salt <- run newPWSalt
+      let serv' = set pwSalt salt serv
+      S.modify $ over database (pwSetService x serv')
+      showPass x
+      servMenu x
 
 changeMasterPass :: S.StateT Status IO ()
 changeMasterPass = do
@@ -154,7 +167,7 @@ showPass x = do
 
 buildData :: S.StateT Status IO PWData
 buildData = do
-  d <- S.StateT $ return . newPWData
+  d <- run newPWData
   req $ reqIf (confirm "would you like to change the default policy?")
     (do
       let p = d^.pwPolicy

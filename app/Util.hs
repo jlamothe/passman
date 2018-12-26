@@ -20,7 +20,7 @@ License along with this program.  If not, see
 
 -}
 
-module Util (menu, req, tryReq, confirm) where
+module Util (menu, run, req, tryReq, confirm) where
 
 import Control.Monad (join)
 import Control.Monad.Trans.Class (lift)
@@ -51,6 +51,9 @@ menuItem (str, x) = (str, return x)
 
 reqState :: Request (S.StateT s IO a) -> S.StateT s IO a
 reqState = join . req
+
+run :: Monad m => (s -> (a, s)) -> S.StateT s m a
+run f = S.StateT $ return . f
 
 req :: Request a -> S.StateT s IO a
 req = lift . fmap fromJust . runRequest . required
