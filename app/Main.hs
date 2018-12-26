@@ -124,7 +124,12 @@ searchServ :: S.StateT Status IO ()
 searchServ = do
   svc <- req $ prompt "service name: " reqResp
   db  <- S.gets $ view database
-  selectServ $ pwSearch svc db
+  case pwSearch svc db of
+    []  -> do
+      lift $ putStrLn "\nservice not found"
+      mainMenu
+    [x] -> viewEdit x
+    xs  -> selectServ xs
 
 listServ :: S.StateT Status IO ()
 listServ = S.gets (view database) >>= selectServ . pwSearch ""
