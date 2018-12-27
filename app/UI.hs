@@ -88,6 +88,39 @@ viewEditMenu = menu "View/Edit Password"
   , ( "cancel",          mainMenu   )
   ]
 
+changeMasterPass :: S.StateT Status IO ()
+changeMasterPass = do
+  oldP <- S.gets $ view masterPass
+  newP <- req $ reqDefault getMasterPass oldP
+  S.modify $ set masterPass newP
+  mainMenu
+
+lockSession :: S.StateT Status IO ()
+lockSession = do
+  lift $ putStrLn "\nsession locked"
+  pass <- S.gets $ view masterPass
+  mx <- lift $ runRequest $ prompt "password: " reqPassword
+  case mx of
+    Nothing -> lockSession
+    Just x  -> if x == pass
+      then mainMenu
+      else lockSession
+
+quit :: S.StateT Status IO ()
+quit = return ()
+
+buildData :: S.StateT Status IO PWData
+buildData = do
+  d <- run newPWData
+  req $ reqIf (confirm "would you like to change the default policy?")
+    (do
+      let p = d^.pwPolicy
+      p <- editPolicy p <|> do
+        reqIO $ putStrLn "invalid password policy - using default"
+        return p
+      return $ set pwPolicy p d)
+    (return d)
+
 searchServ :: S.StateT Status IO ()
 searchServ = do
   svc <- req $ prompt "service name: " reqResp
@@ -132,27 +165,6 @@ changeSalt x = do
       showPass x
       servMenu x
 
-changeMasterPass :: S.StateT Status IO ()
-changeMasterPass = do
-  oldP <- S.gets $ view masterPass
-  newP <- req $ reqDefault getMasterPass oldP
-  S.modify $ set masterPass newP
-  mainMenu
-
-lockSession :: S.StateT Status IO ()
-lockSession = do
-  lift $ putStrLn "\nsession locked"
-  pass <- S.gets $ view masterPass
-  mx <- lift $ runRequest $ prompt "password: " reqPassword
-  case mx of
-    Nothing -> lockSession
-    Just x  -> if x == pass
-      then mainMenu
-      else lockSession
-
-quit :: S.StateT Status IO ()
-quit = return ()
-
 showPass :: String -> S.StateT Status IO ()
 showPass x = do
   lift $ putStrLn ""
@@ -164,18 +176,6 @@ showPass x = do
       lift $ putStrLn $ case pwGenerate pw d of
         Nothing -> "invalid password data"
         Just pw -> "password for " ++ x ++ ": " ++ pw
-
-buildData :: S.StateT Status IO PWData
-buildData = do
-  d <- run newPWData
-  req $ reqIf (confirm "would you like to change the default policy?")
-    (do
-      let p = d^.pwPolicy
-      p <- editPolicy p <|> do
-        reqIO $ putStrLn "invalid password policy - using default"
-        return p
-      return $ set pwPolicy p d)
-    (return d)
 
 -- TODO: refactor this monstrosity
 editPolicy :: PWPolicy -> Request PWPolicy
