@@ -27,6 +27,7 @@ import Control.Lens (over, set, view, (^.))
 import Control.Monad (when)
 import Control.Monad.Trans.Class (lift)
 import qualified Control.Monad.Trans.State as S
+import Data.Maybe (maybe)
 import System.Console.HCL
   ( Request
   , prompt
@@ -149,29 +150,35 @@ servMenu x = menu x
 
 editPassMenu :: String -> S.StateT Status IO ()
 editPassMenu x = menu (x ++ " : Edit Password")
-  [ ( "generate new password", changeSalt x )
-  , ( "cancel",                servMenu x   )
+  [ ( "generate new password", changeSalt x   )
+  , ( "edit password policy",  doEditPolicy x )
+  , ( "cancel",                servMenu x     )
   ]
 
 changeSalt :: String -> S.StateT Status IO ()
-changeSalt x = do
-  db <- S.gets $ view database
-  case pwGetService x db of
-    Nothing   -> mainMenu
-    Just serv -> do
-      salt <- run newPWSalt
-      let serv' = set pwSalt salt serv
-      S.modify $ over database (pwSetService x serv')
-      showPass x
-      servMenu x
+changeSalt x = withService x mainMenu $ \d -> do
+  salt <- run newPWSalt
+  let d' = set pwSalt salt d
+  S.modify $ over database $ pwSetService x d'
+  showPass x
+  servMenu x
+
+doEditPolicy :: String -> S.StateT Status IO ()
+doEditPolicy x = withService x mainMenu $ \d -> do
+  let p = d^.pwPolicy
+  tryReq (editPolicy p) >>= maybe
+    (lift $ putStrLn "invalid policy - leaving unchanged")
+    (\p' -> do
+      S.modify $ over database $ pwSetService x $ set pwPolicy p' d
+      showPass x)
+  editPassMenu x
 
 showPass :: String -> S.StateT Status IO ()
 showPass x = do
   lift $ putStrLn ""
-  db <- S.gets $ view database
-  case pwGetService x db of
-    Nothing -> lift $ putStrLn "service not found"
-    Just d  -> do
+  withService x
+    (lift $ putStrLn "service not found") $
+    \d -> do
       pw <- S.gets $ view masterPass
       lift $ putStrLn $ case pwGenerate pw d of
         Nothing -> "invalid password data"

@@ -20,8 +20,9 @@ License along with this program.  If not, see
 
 -}
 
-module Util (menu, run, req, tryReq, confirm) where
+module Util (menu, run, withService, req, tryReq, confirm) where
 
+import Control.Lens (view)
 import Control.Monad (join)
 import Control.Monad.Trans.Class (lift)
 import qualified Control.Monad.Trans.State as S
@@ -36,6 +37,8 @@ import System.Console.HCL
   , required
   , runRequest
   )
+
+import Password
 
 import Types
 
@@ -54,6 +57,17 @@ reqState = join . req
 
 run :: Monad m => (s -> (a, s)) -> S.StateT s m a
 run f = S.StateT $ return . f
+
+withService
+  :: String
+  -> S.StateT Status IO a
+  -> (PWData -> S.StateT Status IO a)
+  -> S.StateT Status IO a
+withService srv fb act = do
+  db <- S.gets $ view database
+  case pwGetService srv db of
+    Nothing -> fb
+    Just x  -> act x
 
 req :: Request a -> S.StateT s IO a
 req = lift . fmap fromJust . runRequest . required
