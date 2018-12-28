@@ -53,7 +53,7 @@ getMasterPass = do
   p2 <- required $ prompt "confirm master password: " reqPassword
   if p1 /= p2
     then do
-      reqIO $ putStrLn "passwords do not match"
+      reqIO $ putStrLn "The passwords you entered do not match."
       reqFail
     else return p1
 
@@ -72,15 +72,18 @@ addPassword = do
   svc <- req $ prompt "service name: " reqResp
   db <- S.gets $ view database
   if pwHasService svc db
-    then req (confirm "service exists - overwrite?") >>= flip when (addPassword' svc)
-    else addPassword' svc
-  mainMenu
-
-addPassword' :: String -> S.StateT Status IO ()
-addPassword' x = do
-  d <- buildData
-  S.modify $ over database $ pwSetService x d
-  showPass x
+    then do
+      edit <- req (confirm $
+        "The service already exists in the database.\n" ++
+        "Would you like to edit it?")
+      if edit
+        then doEditPolicy svc
+        else mainMenu
+    else do
+      d <- buildData
+      setService svc d
+      showPass svc
+      servMenu svc
 
 viewEditMenu :: S.StateT Status IO ()
 viewEditMenu = menu "View/Edit Password"
@@ -98,14 +101,12 @@ changeMasterPass = do
 
 lockSession :: S.StateT Status IO ()
 lockSession = do
-  lift $ putStrLn "\nsession locked"
+  lift $ putStrLn "\nThe session is locked."
   pass <- S.gets $ view masterPass
-  mx <- lift $ runRequest $ prompt "password: " reqPassword
-  case mx of
-    Nothing -> lockSession
-    Just x  -> if x == pass
-      then mainMenu
-      else lockSession
+  x <- req $ prompt "master password: " reqPassword
+  if x == pass
+    then mainMenu
+    else lockSession
 
 quit :: S.StateT Status IO ()
 quit = return ()
@@ -113,13 +114,11 @@ quit = return ()
 buildData :: S.StateT Status IO PWData
 buildData = do
   d <- run newPWData
-  req $ reqIf (confirm "would you like to change the default policy?")
+  req $ reqIf (confirm "Would you like to change the password policy?")
     (do
       let p = d^.pwPolicy
-      p <- editPolicy p <|> do
-        reqIO $ putStrLn "invalid password policy - using default"
-        return p
-      return $ set pwPolicy p d)
+      p' <- reqDefault (editPolicy p) p
+      return $ set pwPolicy p' d)
     (return d)
 
 searchServ :: S.StateT Status IO ()
@@ -128,7 +127,7 @@ searchServ = do
   db  <- S.gets $ view database
   case pwSearch svc db of
     []  -> do
-      lift $ putStrLn "\nservice not found"
+      lift $ putStrLn "\nThe service could not be found in the database."
       mainMenu
     [x] -> servMenu x
     xs  -> selectServ xs
@@ -145,69 +144,68 @@ servMenu :: String -> S.StateT Status IO ()
 servMenu x = menu x
   [ ( "show password", showPass x >> servMenu x )
   , ( "edit password", editPassMenu x           )
-  , ( "cancel",        mainMenu                 )
+  , ( "back",          mainMenu                 )
   ]
 
 editPassMenu :: String -> S.StateT Status IO ()
 editPassMenu x = menu (x ++ " : Edit Password")
   [ ( "generate new password", changeSalt x   )
   , ( "edit password policy",  doEditPolicy x )
-  , ( "cancel",                servMenu x     )
+  , ( "back",                  servMenu x     )
   ]
 
 changeSalt :: String -> S.StateT Status IO ()
 changeSalt x = withService x mainMenu $ \d -> do
   salt <- run newPWSalt
-  let d' = set pwSalt salt d
-  S.modify $ over database $ pwSetService x d'
+  setService x $ set pwSalt salt d
   showPass x
-  servMenu x
+  editPassMenu x
 
 doEditPolicy :: String -> S.StateT Status IO ()
 doEditPolicy x = withService x mainMenu $ \d -> do
   let p = d^.pwPolicy
-  tryReq (editPolicy p) >>= maybe
-    (lift $ putStrLn "invalid policy - leaving unchanged")
-    (\p' -> do
-      S.modify $ over database $ pwSetService x $ set pwPolicy p' d
-      showPass x)
+  p' <- req $ reqDefault (editPolicy p) p
+  setService x $ set pwPolicy p' d
+  showPass x
   editPassMenu x
 
 showPass :: String -> S.StateT Status IO ()
 showPass x = do
   lift $ putStrLn ""
   withService x
-    (lift $ putStrLn "service not found") $
+    (lift $ putStrLn "The service could not be found in the database.") $
     \d -> do
       pw <- S.gets $ view masterPass
       lift $ putStrLn $ case pwGenerate pw d of
-        Nothing -> "invalid password data"
+        Nothing -> "The password data were not valid."
         Just pw -> "password for " ++ x ++ ": " ++ pw
 
 -- TODO: refactor this monstrosity
 editPolicy :: PWPolicy -> Request PWPolicy
-editPolicy p = if validatePWPolicy p
-  then do
-    p <- edit "length" (p^.pwLength) pwLength p
-    p <- edit "min upper case"  (p^.pwUpper) pwUpper p
-    p <- edit "min lower case" (p^.pwLower) pwLower p
-    p <- edit "min digits" (p^.pwDigits) pwDigits p
-    p <- special p
-    if validatePWPolicy p
-      then return p
-      else reqFail
-  else reqFail
+editPolicy p = do
+  p <- edit "length" (p^.pwLength) pwLength p
+  p <- edit "min upper case"  (p^.pwUpper) pwUpper p
+  p <- edit "min lower case" (p^.pwLower) pwLower p
+  p <- edit "min digits" (p^.pwDigits) pwDigits p
+  p <- special p
+  if validatePWPolicy p
+    then return p
+    else do
+      reqIO $ putStrLn $
+        "\nThe password policy you entered is invalid\n." ++
+        "It will not be changed."
+      reqFail
   where
     edit l v t p = do
       v <- reqDefault
         (prompt ("new " ++ l ++ " (default " ++ show v ++ "): ") reqInt) v
       return $ set t v p
     special p = do
-      reqIO $ putStrLn $ "special chars are currently " ++
+      reqIO $ putStrLn $ "Special characters are currently " ++
         (case p^.pwSpecial of
           Nothing -> "not "
-          Just _  -> "") ++ "allowed"
-      reqIf (confirm "allow special chars?")
+          Just _  -> "") ++ "allowed."
+      reqIf (confirm "Would you like to allow special characters?")
         (case p^.pwSpecial of
           Nothing -> do
             x <- required $ prompt "min special chars: " reqInt

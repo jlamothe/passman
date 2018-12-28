@@ -20,9 +20,17 @@ License along with this program.  If not, see
 
 -}
 
-module Util (menu, run, withService, req, tryReq, confirm) where
+module Util
+  ( menu
+  , run
+  , withService
+  , setService
+  , req
+  , tryReq
+  , confirm
+  ) where
 
-import Control.Lens (view)
+import Control.Lens (over, view)
 import Control.Monad (join)
 import Control.Monad.Trans.Class (lift)
 import qualified Control.Monad.Trans.State as S
@@ -68,6 +76,9 @@ withService srv fb act = do
   case pwGetService srv db of
     Nothing -> fb
     Just x  -> act x
+
+setService :: String -> PWData -> S.StateT Status IO ()
+setService k = S.modify . over database . pwSetService k
 
 req :: Request a -> S.StateT s IO a
 req = lift . fmap fromJust . runRequest . required
