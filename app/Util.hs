@@ -39,9 +39,9 @@ import System.Console.HCL
   ( Request
   , prompt
   , reqAgree
+  , reqChar
   , reqIf
   , reqMenu
-  , reqResp
   , required
   , runRequest
   )
@@ -87,6 +87,6 @@ tryReq :: Request a -> S.StateT s IO (Maybe a)
 tryReq = lift . runRequest
 
 confirm :: String -> Request Bool
-confirm x = required $ prompt (x ++ " (y/n): ") $ reqAgree Nothing reqResp
+confirm x = prompt (x ++ " (y/n): ") $ reqAgree Nothing $ fmap return reqChar
 
 --jl
