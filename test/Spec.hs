@@ -26,6 +26,7 @@ import Control.Monad (when)
 import System.Exit (exitFailure)
 import Test.HUnit (errors, failures, runTestTT, Test(TestList))
 
+import qualified Spec.JSON as JSON
 import qualified Spec.NewPWData as NewPWData
 import qualified Spec.NewPWDatabase as NewPWDatabase
 import qualified Spec.NewPWPolicy as NewPWPolicy
@@ -57,6 +58,7 @@ tests = TestList
   , PWSetService.tests
   , PWGetService.tests
   , PWSearch.tests
+  , JSON.tests
   ]
 
 --jl

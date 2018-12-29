@@ -23,6 +23,7 @@ License along with this program.  If not, see
 -}
 
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE  OverloadedStrings #-}
 
 module Password (
   -- * Data Types
@@ -47,12 +48,23 @@ module Password (
   ) where
 
 import Control.Lens (makeLenses, over, set, (^.))
+import Data.Aeson
+  ( FromJSON (parseJSON)
+  , ToJSON (toJSON)
+  , Value (String)
+  , object
+  , withObject
+  , withText
+  , (.:)
+  , (.=)
+  )
 import qualified Data.ByteString.Lazy as B
 import qualified Data.ByteString.Base64.Lazy as B64
 import Data.Char (isUpper, isLower, isDigit, isAlphaNum, toLower)
 import Data.Digest.Pure.SHA
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
+import qualified Data.Text as T'
 import qualified Data.Text.Lazy as T
 import Data.Text.Lazy.Encoding (decodeUtf8, encodeUtf8)
 import System.Random (RandomGen, randoms, split)
@@ -93,6 +105,43 @@ type PWSalt = B.ByteString
 
 makeLenses ''PWPolicy
 makeLenses ''PWData
+
+instance FromJSON PWData where
+  parseJSON = withObject "PWData" $ \v -> PWData
+    <$> v .: "policy"
+    <*> v .: "salt"
+
+instance FromJSON PWPolicy where
+  parseJSON = withObject "PWPolicy" $ \v -> PWPolicy
+    <$> v .: "length"
+    <*> v .: "min_upper"
+    <*> v .: "min_lower"
+    <*> v .: "min_digits"
+    <*> v .: "min_special"
+
+instance FromJSON B.ByteString where
+  parseJSON = withText "ByteString" $ \v ->
+    case B64.decode $ encodeUtf8 $ T.pack $ T'.unpack v of
+      Left x  -> fail x
+      Right x -> return x
+
+instance ToJSON PWData where
+  toJSON d = object
+    [ "policy" .= (d^.pwPolicy)
+    , "salt" .= (d^.pwSalt)
+    ]
+
+instance ToJSON PWPolicy where
+  toJSON p = object
+    [ "length" .= (p^.pwLength)
+    , "min_upper" .= (p^.pwUpper)
+    , "min_lower" .= (p^.pwLower)
+    , "min_digits" .= (p^.pwDigits)
+    , "min_special" .= (p^.pwSpecial)
+    ]
+
+instance ToJSON B.ByteString where
+  toJSON = toJSON . toB64
 
 -- | default (empty) password database
 newPWDatabase :: PWDatabase
