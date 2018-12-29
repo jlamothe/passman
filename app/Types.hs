@@ -22,7 +22,7 @@ License along with this program.  If not, see
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Types (Status (Status), gen, masterPass, database) where
+module Types (Status (Status), gen, dbPath, masterPass, database) where
 
 import Control.Lens (makeLenses, set, (^.))
 import System.Random (RandomGen (next, split), StdGen)
@@ -32,6 +32,7 @@ import Password
 data Status = Status
   { _gen        :: StdGen
   , _masterPass :: String
+  , _dbPath     :: FilePath
   , _database   :: PWDatabase
   }
 

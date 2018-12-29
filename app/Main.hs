@@ -24,7 +24,9 @@ module Main where
 
 import Control.Monad (mapM_)
 import Control.Monad.Trans.State as S
-import System.Console.HCL (Request, reqIO, runRequest)
+import Data.Maybe (maybe)
+import System.Console.HCL (Request, reqFail, reqIO, runRequest)
+import System.Environment (lookupEnv)
 import System.Random (getStdGen)
 
 import Password
@@ -38,8 +40,30 @@ main = runRequest setup >>= mapM_ (S.evalStateT mainMenu)
 
 setup :: Request Status
 setup = do
-  g <- reqIO getStdGen
+  g  <- reqIO getStdGen
   mp <- getMasterPass
-  return $ Status g mp newPWDatabase
+  p  <- getDBPath
+  return $ Status g mp p newPWDatabase
+
+getDBPath :: Request FilePath
+getDBPath = reqIO (lookupEnv "HOME") >>= maybe
+  (do
+    reqIO $ putStrLn "ERROR: can't find home directory"
+    reqFail)
+  (\home -> case pathDelim home of
+    Nothing -> do
+      reqIO $ putStrLn "ERROR: unsupported home path"
+      reqFail
+    Just delim -> return $ home ++
+      (if last home == delim then "" else [delim]) ++
+      ".passman.json")
+
+pathDelim :: FilePath -> Maybe Char
+pathDelim = foldr
+  (\x a -> case x of
+    '/'  -> Just '/'
+    '\\' -> Just '\\'
+    _    -> a)
+  Nothing
 
 --jl
