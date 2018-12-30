@@ -109,7 +109,7 @@ lockSession = do
     else lockSession
 
 quit :: S.StateT Status IO ()
-quit = return ()
+quit = save
 
 buildData :: S.StateT Status IO PWData
 buildData = do

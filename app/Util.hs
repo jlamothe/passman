@@ -28,12 +28,15 @@ module Util
   , req
   , tryReq
   , confirm
+  , loadFrom
+  , save
   ) where
 
 import Control.Lens (over, view)
 import Control.Monad (join)
 import Control.Monad.Trans.Class (lift)
 import qualified Control.Monad.Trans.State as S
+import Data.Aeson (decodeFileStrict, encodeFile)
 import Data.Maybe (fromJust)
 import System.Console.HCL
   ( Request
@@ -41,6 +44,7 @@ import System.Console.HCL
   , reqAgree
   , reqChar
   , reqIf
+  , reqIO
   , reqMenu
   , required
   , runRequest
@@ -88,5 +92,16 @@ tryReq = lift . runRequest
 
 confirm :: String -> Request Bool
 confirm x = prompt (x ++ " (y/n): ") $ reqAgree Nothing $ fmap return reqChar
+
+loadFrom :: FilePath -> Request PWDatabase
+loadFrom path = reqIO $ (decodeFileStrict path) >>= maybe
+  (return newPWDatabase)
+  return
+
+save :: S.StateT Status IO ()
+save = do
+  path <- S.gets $ view dbPath
+  db   <- S.gets $ view database
+  lift $ encodeFile path db
 
 --jl

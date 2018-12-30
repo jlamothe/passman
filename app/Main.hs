@@ -41,9 +41,10 @@ main = runRequest setup >>= mapM_ (S.evalStateT mainMenu)
 setup :: Request Status
 setup = do
   g  <- reqIO getStdGen
-  mp <- getMasterPass
   p  <- getDBPath
-  return $ Status g mp p newPWDatabase
+  db <- loadFrom p
+  pw <- getMasterPass
+  return $ Status g pw p db
 
 getDBPath :: Request FilePath
 getDBPath = reqIO (lookupEnv "HOME") >>= maybe
