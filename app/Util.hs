@@ -43,6 +43,7 @@ import System.Console.HCL
   , prompt
   , reqAgree
   , reqChar
+  , reqDefault
   , reqIf
   , reqIO
   , reqMenu
@@ -94,7 +95,9 @@ confirm :: String -> Request Bool
 confirm x = prompt (x ++ " (y/n): ") $ reqAgree Nothing $ fmap return reqChar
 
 loadFrom :: FilePath -> Request PWDatabase
-loadFrom path = reqIO $ (decodeFileStrict path) >>= maybe
+loadFrom path = reqDefault
+  (reqIO (decodeFileStrict path))
+  (Just newPWDatabase) >>= maybe
   (return newPWDatabase)
   return
 
