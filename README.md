@@ -17,5 +17,38 @@ You should have received a copy of the GNU Lesser General Public
 License along with this program.  If not, see
 <https://www.gnu.org/licenses/>.
 
+## Executive Summary
+
+This package is a very paranoid password manager.  It consists of two
+parts: a front-end command-line interface, and a back-end library
+(which can be used to create prettier interfaces).
+
+It is important to note that there is no password recovery service.
+If you enter an incorrect master password, you will simply get
+incorrect passwords from the database.  This is by design.  It makes
+the password database much more resistant to a brute-force attack.
+DON'T FORGET YOUR MASTER PASSWORD.
+
+Once installed, the program can be run by typing `passman` in your
+termunal.
+
+## Installing
+
+This package uses [Haskell Stack](https://haskellstack.org).  Please
+refer to their website for instructions on installing Haskell Stack.
+Once you have done this, you can simply use the command `stack
+install` from within this directory to install passman.
+
+## GitHub
+
+The most recent version of passman can be found on GitHub at
+<https://github.com/jlamothe/passman>.
+
+## Pull Requests
+
+Pull requests are welcome, but should be made to the `dev` branch.
+
+## Donations
+
 Bitcoin donations are accepted (but not required) at:
 18hqEsXCinyauDp6smPUEVuscjDdasTKvr
