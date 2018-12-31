@@ -35,9 +35,11 @@ terminal.
 ## Installing
 
 This package uses [Haskell Stack](https://haskellstack.org).  Please
-refer to their website for instructions on installing Haskell Stack.
-Once you have done this, you can simply use the command `stack
-install` from within this directory to install passman.
+refer to [their
+website](https://docs.haskellstack.org/en/stable/README/#how-to-install)
+for instructions on installing Haskell Stack.  Once you have done
+this, you can simply enterg the command `stack install passman` in the
+terminal to install passman.
 
 ## GitHub
 
