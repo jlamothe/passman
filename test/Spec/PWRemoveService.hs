@@ -45,7 +45,7 @@ missingService = TestLabel "missing service" $
 
 test' serv keys = let db' = pwRemoveService serv db in
   TestList $
-  (TestLabel "key count" $ length keys ~?= length (M.keys db')) :
+  TestLabel "key count" (length keys ~?= length (M.keys db')) :
   map
   (\x -> TestLabel x $ TestCase $ assertBool "service missing" $ pwHasService x db')
   keys
