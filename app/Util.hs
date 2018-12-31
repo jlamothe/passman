@@ -24,6 +24,7 @@ module Util
   ( menu
   , run
   , withService
+  , ifServExists
   , setService
   , req
   , tryReq
@@ -81,6 +82,17 @@ withService srv fb act = do
   case pwGetService srv db of
     Nothing -> fb
     Just x  -> act x
+
+ifServExists
+  :: String
+  -> S.StateT Status IO a
+  -> S.StateT Status IO a
+  -> S.StateT Status IO a
+ifServExists s x y = do
+  db <- S.gets $ view database
+  if pwHasService s db
+    then x
+    else y
 
 setService :: String -> PWData -> S.StateT Status IO ()
 setService k = S.modify . over database . pwSetService k

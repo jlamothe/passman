@@ -70,20 +70,19 @@ mainMenu =
 addPassword :: S.StateT Status IO ()
 addPassword = do
   svc <- req $ prompt "service name: " reqResp
-  db <- S.gets $ view database
-  if pwHasService svc db
-    then do
+  ifServExists svc
+    (do
       edit <- req (confirm $
         "The service already exists in the database.\n" ++
         "Would you like to edit it?")
       if edit
         then servMenu svc
-        else mainMenu
-    else do
+        else mainMenu)
+    (do
       d <- buildData
       setService svc d
       showPass svc
-      servMenu svc
+      servMenu svc)
 
 viewEditMenu :: S.StateT Status IO ()
 viewEditMenu = menu "View/Edit Password"
@@ -145,6 +144,7 @@ servMenu x = menu x
   [ ( "show password",  showPass x >> servMenu x )
   , ( "edit password",  editPassMenu x           )
   , ( "remove service", removeServ x             )
+  , ( "rename service", renameServ x             )
   , ( "back",           mainMenu                 )
   ]
 
@@ -161,9 +161,33 @@ removeServ x = do
     "Are you sure you want to delete the password for " ++ x ++ "?"
   if go
     then do
-      S.modify $ over database $ pwRemoveService x
+      removeServ' x
       mainMenu
     else servMenu x
+
+removeServ' :: String -> S.StateT Status IO ()
+removeServ' = S.modify . over database . pwRemoveService
+
+renameServ :: String -> S.StateT Status IO ()
+renameServ x = do
+  y <- req $ prompt "new service name: " reqResp
+  if x == y
+    then servMenu x
+    else ifServExists y
+      (do
+        overwrite <- req $ confirm $
+          y ++ " already exists.\n" ++
+          "Would you like to overwrite it?"
+        if overwrite
+          then renameServ' x y
+          else servMenu x)
+      (renameServ' x y)
+
+renameServ' :: String -> String -> S.StateT Status IO ()
+renameServ' x y = withService x mainMenu $ \d -> do
+  removeServ' x
+  setService y d
+  servMenu y
 
 changeSalt :: String -> S.StateT Status IO ()
 changeSalt x = withService x mainMenu $ \d -> do
