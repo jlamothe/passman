@@ -77,7 +77,7 @@ addPassword = do
         "The service already exists in the database.\n" ++
         "Would you like to edit it?")
       if edit
-        then doEditPolicy svc
+        then servMenu svc
         else mainMenu
     else do
       d <- buildData
