@@ -142,9 +142,10 @@ selectServ xs = menu "Select Service" $
 
 servMenu :: String -> S.StateT Status IO ()
 servMenu x = menu x
-  [ ( "show password", showPass x >> servMenu x )
-  , ( "edit password", editPassMenu x           )
-  , ( "back",          mainMenu                 )
+  [ ( "show password",  showPass x >> servMenu x )
+  , ( "edit password",  editPassMenu x           )
+  , ( "remove service", removeServ x             )
+  , ( "back",           mainMenu                 )
   ]
 
 editPassMenu :: String -> S.StateT Status IO ()
@@ -153,6 +154,16 @@ editPassMenu x = menu (x ++ " : Edit Password")
   , ( "edit password policy",  doEditPolicy x )
   , ( "back",                  servMenu x     )
   ]
+
+removeServ :: String -> S.StateT Status IO ()
+removeServ x = do
+  go <- req $ confirm $
+    "Are you sure you want to delete the password for " ++ x ++ "?"
+  if go
+    then do
+      S.modify $ over database $ pwRemoveService x
+      mainMenu
+    else servMenu x
 
 changeSalt :: String -> S.StateT Status IO ()
 changeSalt x = withService x mainMenu $ \d -> do
