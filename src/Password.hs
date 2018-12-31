@@ -44,7 +44,7 @@ module Password (
   -- ** Password Checkers
   pwCountUpper, pwCountLower, pwCountDigits, pwCountSpecial, pwCount,
   -- ** Database Functions
-  pwHasService, pwSetService, pwGetService, pwSearch
+  pwHasService, pwSetService, pwGetService, pwRemoveService, pwSearch
   ) where
 
 import Control.Lens (makeLenses, over, set, (^.))
@@ -296,6 +296,16 @@ pwGetService
   -- ^ the service's password data, or @"Nothing"@ if the service is
   -- not found
 pwGetService = M.lookup
+
+-- | removes a service from the database
+pwRemoveService
+  :: String
+  -- ^ the service being removed
+  -> PWDatabase
+  -- ^ the database the service is being removed from
+  -> PWDatabase
+  -- ^ the resulting database
+pwRemoveService = M.delete
 
 -- | searches for a service
 pwSearch
