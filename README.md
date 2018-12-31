@@ -30,7 +30,7 @@ the password database much more resistant to a brute-force attack.
 DON'T FORGET YOUR MASTER PASSWORD.
 
 Once installed, the program can be run by typing `passman` in your
-termunal.
+terminal.
 
 ## Installing
 
