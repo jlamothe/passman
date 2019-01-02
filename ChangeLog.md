@@ -1,6 +1,6 @@
 # Changelog for passman
 
-## Unreleased changes
+## 0.2
 
 - implemented manual saving
 - added a warning when changing master password
