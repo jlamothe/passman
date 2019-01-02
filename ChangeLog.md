@@ -3,6 +3,7 @@
 ## Unreleased changes
 
 - implemented manual saving
+- added a warning when changing master password
 
 ## 0.1.1
 

@@ -94,9 +94,13 @@ viewEditMenu = menu "View/Edit Password"
 
 changeMasterPass :: S.StateT Status IO ()
 changeMasterPass = do
-  oldP <- S.gets $ view masterPass
-  newP <- req $ reqDefault getMasterPass oldP
-  S.modify $ set masterPass newP
+  req (confirm $
+    "\nWARNING: Changing your master password will change all of your saved passwords.\n" ++
+    "Are you sure you would like to proceed?") >>= flip when
+    (do
+      oldP <- S.gets $ view masterPass
+      newP <- req $ reqDefault getMasterPass oldP
+      S.modify $ set masterPass newP)
   mainMenu
 
 lockSession :: S.StateT Status IO ()
