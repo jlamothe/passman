@@ -323,12 +323,13 @@ isSpecial :: Char -> Bool
 isSpecial = not . isAlphaNum
 
 mkPass :: String -> PWPolicy -> String
-mkPass (x:xs) p = let p' = nextPolicy x p in
-  if p^.pwLength <= 0
+mkPass [] _ = "" -- this should never happen
+mkPass (x:xs) p = if p^.pwLength <= 0
   then ""
-  else if validatePWPolicy p'
-  then x : mkPass xs p'
-  else mkPass xs p
+  else let p' = nextPolicy x p in
+    if validatePWPolicy p'
+    then x : mkPass xs p'
+    else mkPass xs p
 
 mkPool :: B.ByteString -> String
 mkPool = toB64 . raw where
