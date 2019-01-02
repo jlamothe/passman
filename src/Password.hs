@@ -23,7 +23,7 @@ License along with this program.  If not, see
 -}
 
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE  OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Password (
   -- * Data Types
