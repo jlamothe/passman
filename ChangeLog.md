@@ -1,5 +1,9 @@
 # Changelog for passman
 
+## current
+
+- refactoring
+
 ## 0.2
 
 - implemented manual saving

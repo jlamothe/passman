@@ -59,15 +59,15 @@ import Data.Aeson
   , (.=)
   )
 import qualified Data.ByteString.Lazy as B
+import qualified Data.ByteString.Lazy.Char8 as B8
+import Data.ByteString.Builder (toLazyByteString, stringUtf8)
 import qualified Data.ByteString.Base16.Lazy as B16
 import qualified Data.ByteString.Base64.Lazy as B64
 import Data.Char (isUpper, isLower, isDigit, isAlphaNum, toLower)
 import Data.Digest.Pure.SHA
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
-import qualified Data.Text as T'
-import qualified Data.Text.Lazy as T
-import Data.Text.Lazy.Encoding (decodeUtf8, encodeUtf8)
+import qualified Data.Text as T
 import System.Random (RandomGen, randoms, split)
 
 -- | a mapping of service names to password data
@@ -122,7 +122,7 @@ instance FromJSON PWPolicy where
 
 instance FromJSON B.ByteString where
   parseJSON = withText "ByteString" $ \v ->
-    case B64.decode $ encodeUtf8 $ T.pack $ T'.unpack v of
+    case B64.decode $ toUTF8 $ T.unpack v of
       Left x  -> fail x
       Right x -> return x
 
@@ -340,7 +340,7 @@ mkSeed :: String -> PWData -> B.ByteString
 mkSeed pw d = toUTF8 pw `B.append` (d^.pwSalt)
 
 mkHash :: B.ByteString -> B.ByteString
-mkHash = fst . B16.decode . encodeUtf8 . T.pack . show . sha256
+mkHash = fst . B16.decode . toUTF8 . show . sha256
 
 nextPolicy :: Char -> PWPolicy -> PWPolicy
 nextPolicy x p = over pwLength pred $
@@ -357,10 +357,10 @@ nextPolicy x p = over pwLength pred $
     dec l = over l (max 0 . pred) p
 
 toUTF8 :: String -> B.ByteString
-toUTF8 = encodeUtf8 . T.pack
+toUTF8 = toLazyByteString . stringUtf8
 
 toB64 :: B.ByteString -> String
-toB64 = T.unpack . decodeUtf8 . B64.encode
+toB64 = B8.unpack . B64.encode
 
 contains :: String -> String -> Bool
 _ `contains` "" = True
