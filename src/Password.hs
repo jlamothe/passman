@@ -59,6 +59,7 @@ import Data.Aeson
   , (.=)
   )
 import qualified Data.ByteString.Lazy as B
+import qualified Data.ByteString.Base16.Lazy as B16
 import qualified Data.ByteString.Base64.Lazy as B64
 import Data.Char (isUpper, isLower, isDigit, isAlphaNum, toLower)
 import Data.Digest.Pure.SHA
@@ -338,10 +339,7 @@ mkSeed :: String -> PWData -> B.ByteString
 mkSeed pw d = toUTF8 pw `B.append` (d^.pwSalt)
 
 mkHash :: B.ByteString -> B.ByteString
-mkHash = raw . show . sha256 where
-  raw (x:y:xs) = read ("0x" ++ [x] ++ [y]) `B.cons` raw xs
-  raw [_] = error "odd number of hex digits in hash"
-  raw "" = B.empty
+mkHash = fst . B16.decode . encodeUtf8 . T.pack . show . sha256
 
 nextPolicy :: Char -> PWPolicy -> PWPolicy
 nextPolicy x p = over pwLength pred $

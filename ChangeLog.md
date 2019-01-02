@@ -4,6 +4,7 @@
 
 - implemented manual saving
 - added a warning when changing master password
+- some code cleanup as suggested by [Stephen Paul Weber](https://github.com/singpolyma)
 
 ## 0.1.1
 
