@@ -22,12 +22,10 @@ License along with this program.  If not, see
 
 module UI (getMasterPass, mainMenu) where
 
-import Control.Applicative ((<|>))
 import Control.Lens (over, set, view, (^.))
 import Control.Monad (when)
 import Control.Monad.Trans.Class (lift)
 import qualified Control.Monad.Trans.State as S
-import Data.Maybe (maybe)
 import System.Console.HCL
   ( Request
   , prompt
@@ -39,7 +37,6 @@ import System.Console.HCL
   , reqPassword
   , reqResp
   , required
-  , runRequest
   )
 
 import Password
@@ -215,19 +212,20 @@ showPass x = do
   withService x
     (lift $ putStrLn "The service could not be found in the database.") $
     \d -> do
-      pw <- S.gets $ view masterPass
-      lift $ putStrLn $ case pwGenerate pw d of
+      mp <- S.gets $ view masterPass
+      lift $ putStrLn $ case pwGenerate mp d of
         Nothing -> "The password data were not valid."
         Just pw -> "password for " ++ x ++ ": " ++ pw
 
 -- TODO: refactor this monstrosity
 editPolicy :: PWPolicy -> Request PWPolicy
-editPolicy p = do
-  p <- edit "length" (p^.pwLength) pwLength p
-  p <- edit "min upper case"  (p^.pwUpper) pwUpper p
-  p <- edit "min lower case" (p^.pwLower) pwLower p
-  p <- edit "min digits" (p^.pwDigits) pwDigits p
-  p <- special p
+editPolicy policy = do
+  p <-
+    edit "length" (policy^.pwLength) pwLength policy >>=
+    edit "min upper case"  (policy^.pwUpper) pwUpper >>=
+    edit "min lower case" (policy^.pwLower) pwLower  >>=
+    edit "min digits" (policy^.pwDigits) pwDigits    >>=
+    special
   if validatePWPolicy p
     then return p
     else do
@@ -237,9 +235,9 @@ editPolicy p = do
       reqFail
   where
     edit l v t p = do
-      v <- reqDefault
+      v' <- reqDefault
         (prompt ("new " ++ l ++ " (default " ++ show v ++ "): ") reqInt) v
-      return $ set t v p
+      return $ set t v' p
     special p = do
       reqIO $ putStrLn $ "Special characters are currently " ++
         (case p^.pwSpecial of

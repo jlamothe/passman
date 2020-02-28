@@ -28,6 +28,7 @@ import Test.HUnit (Test(..), assertBool, (~?=))
 
 import Password
 
+tests :: Test
 tests = TestLabel "newPWSalt" $ TestList
   [ testLength salt
   , testDiff salt salt'
@@ -36,9 +37,12 @@ tests = TestLabel "newPWSalt" $ TestList
     (salt', _) = newPWSalt g'
     g = mkStdGen 1
 
-testLength x = TestLabel "salt length" $ B.length x ~?= 32
+testLength :: PWSalt -> Test
+testLength x = TestLabel "salt length" $
+  B.length (runPWSalt x) ~?= 32
 
-testDiff x y = TestLabel "different generators" $ TestCase $
+testDiff :: PWSalt -> PWSalt -> Test
+testDiff x y = TestLabel "different salts" $ TestCase $
   assertBool "salts match" $ x /= y
 
 --jl

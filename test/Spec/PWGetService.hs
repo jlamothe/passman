@@ -23,35 +23,46 @@ License along with this program.  If not, see
 module Spec.PWGetService (tests) where
 
 import qualified Data.Map as M
-import System.Random (mkStdGen)
+import System.Random (mkStdGen, StdGen)
 import Test.HUnit (Test (..), (~?=))
 
 import Password
 
+tests :: Test
 tests = TestLabel "pwGetService" $ TestList
   [ empty, found, notFound ]
 
+empty :: Test
 empty = TestLabel "empty database" $
   pwGetService "foo" newPWDatabase ~?= Nothing
 
+found :: Test
 found = TestLabel "service found" $
   pwGetService "foo" db ~?= Just foo
 
+notFound :: Test
 notFound = TestLabel "service not found" $
   pwGetService "quux" db ~?= Nothing
 
+db :: M.Map String PWData
 db = M.fromList
   [ ( "foo", foo )
   , ( "bar", bar )
   , ( "baz", baz )
   ]
 
+foo :: PWData
+g'  :: StdGen
 (foo, g') = newPWData g
 
+bar :: PWData
+g'' :: StdGen
 (bar, g'') = newPWData g'
 
+baz :: PWData
 (baz, _) = newPWData g''
 
+g :: StdGen
 g = mkStdGen 1
 
 --jl

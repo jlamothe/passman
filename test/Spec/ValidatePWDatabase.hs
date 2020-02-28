@@ -24,11 +24,12 @@ module Spec.ValidatePWDatabase (tests) where
 
 import Control.Lens (set)
 import qualified Data.Map as M
-import System.Random (mkStdGen)
+import System.Random (mkStdGen, StdGen)
 import Test.HUnit (Test (..), (~?=))
 
 import Password
 
+tests :: Test
 tests = TestLabel "validatePWDatabase" $ TestList $ map test'
   [ ( "empty",       newPWDatabase, True  )
   , ( "valid",       validDB,       True  )
@@ -36,19 +37,26 @@ tests = TestLabel "validatePWDatabase" $ TestList $ map test'
   , ( "bar invalid", barInvalid,    False )
   ]
 
+test' :: (String, PWDatabase, Bool) -> Test
 test' (label, x, expect) = TestLabel label $
   validatePWDatabase x ~?= expect
 
+validDB :: M.Map String PWData
 validDB = M.fromList [("foo", validData), ("bar", validData)]
 
+fooInvalid :: M.Map String PWData
 fooInvalid = M.insert "foo" invalidData validDB
 
+barInvalid :: M.Map String PWData
 barInvalid = M.insert "bar" invalidData validDB
 
+validData :: PWData
 (validData, _) = newPWData g
 
+invalidData :: PWData
 invalidData = set (pwPolicy.pwLength) (-1) validData
 
+g :: StdGen
 g = mkStdGen 1
 
 --jl

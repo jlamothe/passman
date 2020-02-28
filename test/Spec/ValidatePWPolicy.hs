@@ -27,6 +27,7 @@ import Test.HUnit (Test(..), (~?=))
 
 import Password
 
+tests :: Test
 tests = TestLabel "validatePWPolicy" $ TestList $ map test'
   [ ( "default",          id,                        True  )
   , ( "no special chars", set pwSpecial Nothing,     True  )
@@ -45,18 +46,24 @@ tests = TestLabel "validatePWPolicy" $ TestList $ map test'
   , ( "negative special", set pwSpecial (Just (-1)), False )
   ]
 
+test' :: (String, PWPolicy -> PWPolicy, Bool) -> Test
 test' (label, f, expect) = TestLabel label $
   validatePWPolicy x ~?= expect where
   x = f newPWPolicy
 
+validMins :: PWPolicy -> PWPolicy
 validMins = setAll 1
 
+excessive :: PWPolicy -> PWPolicy
 excessive = setAll 5
 
+shortValid :: PWPolicy -> PWPolicy
 shortValid = set pwLength 8 . setAll 2
 
+shortInvalid :: PWPolicy -> PWPolicy
 shortInvalid = set pwLength 8 . set pwUpper 9
 
+setAll :: Int -> PWPolicy -> PWPolicy
 setAll x = set pwUpper x .
   set pwLower x .
   set pwDigits x .

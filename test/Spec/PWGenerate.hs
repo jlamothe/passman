@@ -24,7 +24,7 @@ module Spec.PWGenerate (tests) where
 
 import Control.Lens (set, (^.))
 import Data.Maybe (fromJust)
-import System.Random (mkStdGen)
+import System.Random (mkStdGen, StdGen)
 import Test.HUnit
   (Test (..)
   , assertBool
@@ -35,6 +35,7 @@ import Test.HUnit
 
 import Password
 
+tests :: Test
 tests = TestLabel "pwGenerate" $ TestList
   [ defaultData
   , invalidPolicy
@@ -43,15 +44,18 @@ tests = TestLabel "pwGenerate" $ TestList
   , differentMaster
   ]
 
+defaultData :: Test
 defaultData = TestLabel "default data" $ TestCase $
   case pwGenerate "foo" validData of
     Nothing -> assertFailure "no password generated"
     Just x  -> assertEqual "incorrect password length"
       (validData^.pwPolicy.pwLength) (length x)
 
+invalidPolicy :: Test
 invalidPolicy = TestLabel "invalid policy" $
   pwGenerate "foo" invalidPolicy' ~?= Nothing
 
+constraints :: Test
 constraints = TestLabel "strict constraints" $ TestCase $
   case pwGenerate "foo" constraints' of
     Nothing -> assertFailure "no password generated"
@@ -67,6 +71,7 @@ constraints = TestLabel "strict constraints" $ TestCase $
       assertEqual "incorrect number of special characters"
         (fromJust $ constraints'^.pwPolicy.pwSpecial) (pwCountSpecial x)
 
+noSpecial :: Test
 noSpecial = TestLabel "no special chars" $ TestCase $
   case pwGenerate "foo" noSpecial' of
     Nothing -> assertFailure "no password generated"
@@ -75,25 +80,31 @@ noSpecial = TestLabel "no special chars" $ TestCase $
         (noSpecial'^.pwPolicy.pwLength) (length x)
       assertEqual "special characters found" 0 $ pwCountSpecial x
 
+differentMaster :: Test
 differentMaster = TestLabel "different master passwords" $ TestCase $
   assertBool "passwords match" $
   fromJust (pwGenerate "foo" validData) /=
   fromJust (pwGenerate "bar" validData)
 
+validData :: PWData
 (validData, _) = newPWData g
 
+invalidPolicy' :: PWData
 invalidPolicy' = set (pwPolicy.pwLength) (-1) validData
 
+constraints' :: PWData
 constraints' = set (pwPolicy.pwUpper) 4 $
   set (pwPolicy.pwLower) 4 $
   set (pwPolicy.pwDigits) 4 $
   set (pwPolicy.pwSpecial) (Just 4)
   validData
 
+noSpecial' :: PWData
 noSpecial' = set (pwPolicy.pwLength) 256 $
   set (pwPolicy.pwSpecial) Nothing
   validData
 
+g :: StdGen
 g = mkStdGen 1
 
 --jl

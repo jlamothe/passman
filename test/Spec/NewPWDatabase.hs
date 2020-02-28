@@ -26,6 +26,7 @@ import Test.HUnit (Test (..), (~?=))
 
 import Password
 
+tests :: Test
 tests = TestLabel "newPWDatabase" $
   length newPWDatabase ~?= 0
 

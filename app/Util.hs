@@ -38,14 +38,13 @@ import Control.Monad (join)
 import Control.Monad.Trans.Class (lift)
 import qualified Control.Monad.Trans.State as S
 import Data.Aeson (decodeFileStrict, encodeFile)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, fromMaybe)
 import System.Console.HCL
   ( Request
   , prompt
   , reqAgree
   , reqChar
   , reqDefault
-  , reqIf
   , reqIO
   , reqMenu
   , required
@@ -79,9 +78,7 @@ withService
   -> S.StateT Status IO a
 withService srv fb act = do
   db <- S.gets $ view database
-  case pwGetService srv db of
-    Nothing -> fb
-    Just x  -> act x
+  maybe fb act $ pwGetService srv db
 
 ifServExists
   :: String
@@ -109,9 +106,7 @@ confirm x = prompt (x ++ " (y/n): ") $ reqAgree Nothing $ fmap return reqChar
 loadFrom :: FilePath -> Request PWDatabase
 loadFrom path = reqDefault
   (reqIO (decodeFileStrict path))
-  (Just newPWDatabase) >>= maybe
-  (return newPWDatabase)
-  return
+  (Just newPWDatabase) >>= (return . fromMaybe newPWDatabase)
 
 save :: S.StateT Status IO ()
 save = do

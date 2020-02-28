@@ -23,35 +23,44 @@ License along with this program.  If not, see
 module Spec.PWSearch (tests) where
 
 import qualified Data.Map as M
-import System.Random (mkStdGen)
+import System.Random (mkStdGen, StdGen)
 import Test.HUnit (Test (..), assertBool, (~?=))
 
 import Password
 
+tests :: Test
 tests = TestLabel "pwSearch" $ TestList $ map test'
   [ ( "no results",   "quux", []                    )
   , ( "some results", "A",    ["bar", "baz"]        )
   , ( "all results",  "",     ["foo", "bar", "baz"] )
   ]
 
+test' :: (String, String, [String]) -> Test
 test' (label, str, expect) = TestLabel label $ TestList $
   TestLabel "length" (length result ~?= length expect) :
   map (\x -> TestLabel ("has " ++ x) $ TestCase $
     assertBool "not found" $ elem x expect) result
   where result = pwSearch str db
 
+db :: M.Map String PWData
 db = M.fromList
   [ ( "foo", foo )
   , ( "bar", bar )
   , ( "baz", baz )
   ]
 
+foo :: PWData
+g'  :: StdGen
 (foo, g') = newPWData g
 
+bar :: PWData
+g'' :: StdGen
 (bar, g'') = newPWData g'
 
+baz :: PWData
 (baz, _) = newPWData g''
 
+g :: StdGen
 g = mkStdGen 1
 
 --jl

@@ -27,6 +27,7 @@ import Test.HUnit (Test(..), (~?=))
 
 import Password
 
+tests :: Test
 tests = TestLabel "PWPolicy" $ TestList $ map test'
   [ ( "pwLength",  newPWPolicy^.pwLength  ~?= 16     )
   , ( "pwUpper",   newPWPolicy^.pwUpper   ~?= 0      )
@@ -35,6 +36,7 @@ tests = TestLabel "PWPolicy" $ TestList $ map test'
   , ( "pwSpecial", newPWPolicy^.pwSpecial ~?= Just 0 )
   ]
 
+test' :: (String, Test) -> Test
 test' (label, x) = TestLabel label x
 
 --jl

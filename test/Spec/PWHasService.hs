@@ -23,32 +23,41 @@ License along with this program.  If not, see
 module Spec.PWHasService (tests) where
 
 import qualified Data.Map as M
-import System.Random (mkStdGen)
+import System.Random (mkStdGen, StdGen)
 import Test.HUnit (Test (..), (~?=))
 
 import Password
 
+tests :: Test
 tests = TestLabel "pwHasService" $ TestList $ map test'
   [ ( "empty database", "foo",  newPWDatabase, False )
-  , ( "in database",    "foo",  db,            True  )
-  , ( "not found",      "quux", db,            False )
+  , ( "in database",    "foo",  database,      True  )
+  , ( "not found",      "quux", database,      False )
   ]
 
+test' :: (String, String, PWDatabase, Bool) -> Test
 test' (label, x, db, expect) = TestLabel label $
   pwHasService x db ~?= expect
 
-db = M.fromList
+database :: M.Map String PWData
+database = M.fromList
   [ ( "foo", foo )
   , ( "bar", bar )
   , ( "baz", baz )
   ]
 
+foo :: PWData
+g'  :: StdGen
 (foo, g') = newPWData g
 
+bar :: PWData
+g'' :: StdGen
 (bar, g'') = newPWData g'
 
+baz :: PWData
 (baz, _) = newPWData g''
 
+g :: StdGen
 g = mkStdGen 1
 
 --jl

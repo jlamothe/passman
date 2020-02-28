@@ -27,6 +27,9 @@ dependencies:
 - lens
 - random
 
+ghc-options:
+- -Wall
+
 library:
   source-dirs: src
   dependencies:

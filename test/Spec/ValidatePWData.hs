@@ -24,26 +24,32 @@ module Spec.ValidatePWData (tests) where
 
 import Control.Lens (set)
 import qualified Data.ByteString.Lazy as B
-import System.Random (mkStdGen)
+import System.Random (mkStdGen, StdGen)
 import Test.HUnit (Test (..), (~?=))
 
 import Password
 
+tests :: Test
 tests = TestLabel "validatePWData" $ TestList $ map test'
   [ ( "valid",          new,           True  )
   , ( "invalid policy", invalidPolicy, False )
   , ( "invalid salt",   invalidSalt,   False )
   ]
 
+test' :: (String, PWData, Bool) -> Test
 test' (label, x, expect) = TestLabel label $
   validatePWData x ~?= expect
 
+new :: PWData
 (new, _) = newPWData g
 
+invalidPolicy :: PWData
 invalidPolicy = set (pwPolicy.pwLength) (-1) new
 
-invalidSalt = set pwSalt B.empty new
+invalidSalt :: PWData
+invalidSalt = set pwSalt (PWSalt B.empty) new
 
+g :: StdGen
 g = mkStdGen 1
 
 --jl

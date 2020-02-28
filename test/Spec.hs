@@ -41,11 +41,13 @@ import qualified Spec.ValidatePWData as ValidatePWData
 import qualified Spec.ValidatePWDatabase as ValidatePWDatabase
 import qualified Spec.ValidatePWPolicy as ValidatePWPolicy
 
+main :: IO ()
 main = do
   counts <- runTestTT tests
   when (failures counts > 0 || errors counts > 0)
     exitFailure
 
+tests :: Test
 tests = TestList
   [ NewPWDatabase.tests
   , NewPWData.tests

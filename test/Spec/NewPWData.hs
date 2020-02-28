@@ -23,23 +23,27 @@ License along with this program.  If not, see
 module Spec.NewPWData (tests) where
 
 import Control.Lens ((^.))
-import System.Random (mkStdGen)
+import System.Random (mkStdGen, StdGen)
 import Test.HUnit (Test  (..), (~?=))
 
 import Password
 
+tests :: Test
 tests = TestLabel "newPData" $ TestList
   [ testSalt x
   , testPolicy x
   ] where (x, _) = newPWData g
 
+testSalt :: PWData -> Test
 testSalt x = TestLabel "pwSalt" $
   x^.pwSalt ~?= salt where
     (salt, _) = newPWSalt g
 
+testPolicy :: PWData -> Test
 testPolicy x = TestLabel "pwPolicy" $
   x^.pwPolicy ~?= newPWPolicy
 
+g :: StdGen
 g = mkStdGen 1
 
 --jl

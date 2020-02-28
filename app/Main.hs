@@ -29,8 +29,6 @@ import System.Console.HCL (Request, reqFail, reqIO, runRequest)
 import System.Environment (lookupEnv)
 import System.Random (getStdGen)
 
-import Password
-
 import Types
 import UI
 import Util
