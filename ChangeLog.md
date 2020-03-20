@@ -3,6 +3,7 @@
 ## current
 
 - refactoring
+- store the database where Windows can find it
 
 ## 0.2
 
