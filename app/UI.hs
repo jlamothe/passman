@@ -57,8 +57,8 @@ getMasterPass = do
 mainMenu :: S.StateT Status IO ()
 mainMenu =
   menu "Main Menu"
-    [ ( "add a password",         addPassword      )
-    , ( "view/edit a password",   viewEditMenu     )
+    [ ( "view/edit a password",   viewEditMenu     )
+    , ( "add a password",         addPassword      )
     , ( "change master password", changeMasterPass )
     , ( "save manually",          save >> mainMenu )
     , ( "lock session",           lockSession      )
