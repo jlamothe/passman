@@ -1,6 +1,6 @@
 # Changelog for passman
 
-## current
+## 0.2.1
 
 - refactoring
 - store the database where Windows can find it
