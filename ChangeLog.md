@@ -4,6 +4,7 @@
 
 - refactoring
 - store the database where Windows can find it
+- confirm master password before creating new service
 
 ## 0.2
 

@@ -20,6 +20,8 @@ License along with this program.  If not, see
 
 -}
 
+{-# LANGUAGE LambdaCase #-}
+
 module UI (getMasterPass, mainMenu) where
 
 import Control.Lens (over, set, view, (^.))
@@ -37,6 +39,7 @@ import System.Console.HCL
   , reqPassword
   , reqResp
   , required
+  , runRequest
   )
 
 import Password
@@ -67,6 +70,20 @@ mainMenu =
 
 addPassword :: S.StateT Status IO ()
 addPassword = do
+  pass <- S.gets (^.masterPass)
+
+  lift (runRequest $ prompt "confirm master password: " reqPassword)
+    >>= \case
+      Nothing -> mainMenu
+      Just chkPass
+        | pass == chkPass -> addPassword'
+
+        | otherwise -> do
+          lift $ putStrLn "Incorrect master password."
+          mainMenu
+
+addPassword' :: S.StateT Status IO ()
+addPassword' = do
   svc <- req $ prompt "service name: " reqResp
   ifServExists svc
     (do
