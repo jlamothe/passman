@@ -4,7 +4,7 @@ Module:      Password
 Description: a simple password manager
 Copyright:   (C) 2018-2020 Jonathan Lamothe
 License:     LGPLv3 (or later)
-Maintainer:  jlamothe1980@gmail.com
+Maintainer:  jonathan@jlamothe.net
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as

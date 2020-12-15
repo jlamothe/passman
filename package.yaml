@@ -3,7 +3,7 @@ version:             0.2.1
 github:              "jlamothe/passman"
 license:             LGPL-3
 author:              "Jonathan Lamothe"
-maintainer:          "jlamothe1980@gmail.com"
+maintainer:          "jonathan@jlamothe.net"
 copyright:           "(C) 2018-2020 Jonathan Lamothe"
 
 extra-source-files:
