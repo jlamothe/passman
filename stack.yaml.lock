@@ -5,15 +5,15 @@
 
 packages:
 - completed:
-    hackage: HCL-1.7.1@sha256:7bc617fbc9ba4b1f9c10d9b3e195042c1f031629f86d08253eec87660492d646,1627
+    hackage: HCL-1.8@sha256:39ec0da0cd6157f20c395e1b0df474df45efb0088afdaab20bb9dfb3662baf7c,1726
     pantry-tree:
       size: 1223
-      sha256: 5dd9d6b52e85caae6e47d8686be92873e00de14791c4e2c2753492ff288454fe
+      sha256: 5c93c5184dc378de5ecf235aa1a60dc24163ab7e0efad19c8f3bbc94354cf2b8
   original:
-    hackage: HCL-1.7.1@sha256:7bc617fbc9ba4b1f9c10d9b3e195042c1f031629f86d08253eec87660492d646
+    hackage: HCL-1.8@sha256:39ec0da0cd6157f20c395e1b0df474df45efb0088afdaab20bb9dfb3662baf7c,1726
 snapshots:
 - completed:
-    size: 508406
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/12/21.yaml
-    sha256: 609dd00c32f59e11bb333b9113d9d2e54269627de1268cbb3cc576af8c7b6237
-  original: lts-12.21
+    size: 533252
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/27.yaml
+    sha256: c2aaae52beeacf6a5727c1010f50e89d03869abfab6d2c2658ade9da8ed50c73
+  original: lts-16.27
