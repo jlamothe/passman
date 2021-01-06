@@ -1,5 +1,10 @@
 # Changelog for passman
 
+## current
+
+- updated to more recent LTS snapshot
+- use microlens instead of lens
+
 ## 0.2.1
 
 - refactoring
