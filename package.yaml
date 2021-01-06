@@ -24,7 +24,8 @@ dependencies:
 - aeson
 - bytestring
 - containers
-- lens
+- microlens >= 0.4.11.2 && < 0.5
+- microlens-th >= 0.4.3.6 && < 0.5
 - random
 
 ghc-options:

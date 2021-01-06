@@ -22,7 +22,7 @@ License along with this program.  If not, see
 
 module Spec.NewPWData (tests) where
 
-import Control.Lens ((^.))
+import Lens.Micro ((^.))
 import System.Random (mkStdGen, StdGen)
 import Test.HUnit (Test  (..), (~?=))
 

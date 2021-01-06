@@ -22,8 +22,8 @@ License along with this program.  If not, see
 
 module Spec.ValidatePWDatabase (tests) where
 
-import Control.Lens (set)
 import qualified Data.Map as M
+import Lens.Micro (set)
 import System.Random (mkStdGen, StdGen)
 import Test.HUnit (Test (..), (~?=))
 

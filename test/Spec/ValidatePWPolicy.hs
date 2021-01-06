@@ -22,7 +22,7 @@ License along with this program.  If not, see
 
 module Spec.ValidatePWPolicy (tests) where
 
-import Control.Lens (set)
+import Lens.Micro (set)
 import Test.HUnit (Test(..), (~?=))
 
 import Password

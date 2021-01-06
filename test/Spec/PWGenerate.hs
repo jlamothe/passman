@@ -22,8 +22,8 @@ License along with this program.  If not, see
 
 module Spec.PWGenerate (tests) where
 
-import Control.Lens (set, (^.))
 import Data.Maybe (fromJust)
+import Lens.Micro (set, (^.))
 import System.Random (mkStdGen, StdGen)
 import Test.HUnit
   (Test (..)

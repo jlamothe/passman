@@ -24,10 +24,11 @@ License along with this program.  If not, see
 
 module UI (getMasterPass, mainMenu) where
 
-import Control.Lens (over, set, view, (^.))
 import Control.Monad (when)
 import Control.Monad.Trans.Class (lift)
 import qualified Control.Monad.Trans.State as S
+import Lens.Micro (over, set, (^.))
+import Lens.Micro.Extras (view)
 import System.Console.HCL
   ( Request
   , prompt

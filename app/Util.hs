@@ -33,12 +33,13 @@ module Util
   , save
   ) where
 
-import Control.Lens (over, view)
 import Control.Monad (join)
 import Control.Monad.Trans.Class (lift)
 import qualified Control.Monad.Trans.State as S
 import Data.Aeson (decodeFileStrict, encodeFile)
 import Data.Maybe (fromJust, fromMaybe)
+import Lens.Micro (over)
+import Lens.Micro.Extras (view)
 import System.Console.HCL
   ( Request
   , prompt

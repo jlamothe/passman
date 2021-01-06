@@ -24,7 +24,8 @@ License along with this program.  If not, see
 
 module Types (Status (Status), gen, dbPath, masterPass, database) where
 
-import Control.Lens (makeLenses, set, (^.))
+import Lens.Micro (set, (^.))
+import Lens.Micro.TH (makeLenses)
 import System.Random (RandomGen (next, split), StdGen)
 
 import Password

@@ -47,7 +47,6 @@ module Password (
   pwHasService, pwSetService, pwGetService, pwRemoveService, pwSearch
   ) where
 
-import Control.Lens (makeLenses, over, set, to, (^.))
 import Data.Aeson
   ( FromJSON (parseJSON)
   , ToJSON (toJSON)
@@ -67,6 +66,8 @@ import Data.Digest.Pure.SHA
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
+import Lens.Micro (over, set, to, (^.))
+import Lens.Micro.TH (makeLenses)
 import System.Random (RandomGen, randoms, split)
 
 -- | a mapping of service names to password data

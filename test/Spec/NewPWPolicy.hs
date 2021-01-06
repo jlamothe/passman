@@ -22,7 +22,7 @@ License along with this program.  If not, see
 
 module Spec.NewPWPolicy (tests) where
 
-import Control.Lens ((^.))
+import Lens.Micro ((^.))
 import Test.HUnit (Test(..), (~?=))
 
 import Password
