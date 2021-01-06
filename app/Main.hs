@@ -22,7 +22,6 @@ License along with this program.  If not, see
 
 module Main where
 
-import Control.Monad (mapM_)
 import Control.Monad.Trans.State as S
 import System.Console.HCL (Request, reqIO, runRequest)
 import System.EasyFile
