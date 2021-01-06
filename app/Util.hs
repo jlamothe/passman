@@ -1,7 +1,7 @@
 {-
 
 passman
-Copyright (C) 2018-2020 Jonathan Lamothe
+Copyright (C) 2018-2021 Jonathan Lamothe
 <jonathan@jlamothe.net>
 
 This program is free software: you can redistribute it and/or modify

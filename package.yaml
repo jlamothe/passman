@@ -4,7 +4,7 @@ github:              "jlamothe/passman"
 license:             LGPL-3
 author:              "Jonathan Lamothe"
 maintainer:          "jonathan@jlamothe.net"
-copyright:           "(C) 2018-2020 Jonathan Lamothe"
+copyright:           "(C) 2018-2021 Jonathan Lamothe"
 
 extra-source-files:
 - README.md
