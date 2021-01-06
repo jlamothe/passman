@@ -1,6 +1,6 @@
 # Changelog for passman
 
-## current
+## 0.3.0
 
 - updated to more recent LTS snapshot
 - use microlens instead of lens
