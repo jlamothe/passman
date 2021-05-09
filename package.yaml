@@ -1,5 +1,5 @@
 name:                passman
-version:             0.3.0
+version:             0.3.0.1
 github:              "jlamothe/passman"
 license:             LGPL-3
 author:              "Jonathan Lamothe"
@@ -21,9 +21,9 @@ description:         Please see the README on GitHub at <https://github.com/jlam
 
 dependencies:
 - base >= 4.7 && < 5
-- aeson
-- bytestring
-- containers
+- aeson >= 1.5.6.0 && < 1.6
+- bytestring >= 0.10.12.0 && < 0.11
+- containers >= 0.6.2.1 && < 0.7
 - microlens >= 0.4.11.2 && < 0.5
 - microlens-th >= 0.4.3.6 && < 0.5
 - random
