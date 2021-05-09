@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cb93fb36b8e4bc0ba6599211ccbb3c5be2617b87a64c3afd57b41914d9ecd495
+-- hash: 2f7f0e04b3c25e738c5538d07d22d64c28c2a586ed82d577999d070ceafc41ba
 
 name:           passman
-version:        0.3.0.1
+version:        0.3.0.2
 synopsis:       a simple password manager
 description:    Please see the README on GitHub at <https://github.com/jlamothe/passman#readme>
 category:       Security
@@ -36,17 +36,17 @@ library
       src
   ghc-options: -Wall
   build-depends:
-      SHA
+      SHA >=1.6.4.4 && <1.7
     , aeson >=1.5.6.0 && <1.6
     , base >=4.7 && <5
-    , base16-bytestring
-    , base64-bytestring
+    , base16-bytestring >=0.1.1.7 && <0.2
+    , base64-bytestring >=1.1.0.0 && <1.2
     , bytestring >=0.10.12.0 && <0.11
     , containers >=0.6.2.1 && <0.7
     , microlens >=0.4.11.2 && <0.5
     , microlens-th >=0.4.3.6 && <0.5
-    , random
-    , text
+    , random >=1.1 && <1.2
+    , text >=1.2.4.1 && <1.3
   default-language: Haskell2010
 
 executable passman
@@ -69,8 +69,8 @@ executable passman
     , microlens >=0.4.11.2 && <0.5
     , microlens-th >=0.4.3.6 && <0.5
     , passman
-    , random
-    , transformers
+    , random >=1.1 && <1.2
+    , transformers >=0.5.6.2
   default-language: Haskell2010
 
 test-suite passman-test
@@ -104,5 +104,5 @@ test-suite passman-test
     , microlens >=0.4.11.2 && <0.5
     , microlens-th >=0.4.3.6 && <0.5
     , passman
-    , random
+    , random >=1.1 && <1.2
   default-language: Haskell2010

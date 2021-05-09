@@ -1,5 +1,9 @@
 # Changelog for passman
 
+## 0.3.0.2
+
+- more dependency versions
+
 ## 0.3.0.1
 
 - updated to latest stackage LTS
