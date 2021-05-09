@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2f7f0e04b3c25e738c5538d07d22d64c28c2a586ed82d577999d070ceafc41ba
+-- hash: 5416ad0e8ffcf5ec8d69cb12dcfcdb537e9095de9124670fea9fd4af95ce7612
 
 name:           passman
 version:        0.3.0.2
@@ -70,7 +70,7 @@ executable passman
     , microlens-th >=0.4.3.6 && <0.5
     , passman
     , random >=1.1 && <1.2
-    , transformers >=0.5.6.2
+    , transformers >=0.5.6.2 && <0.6
   default-language: Haskell2010
 
 test-suite passman-test

@@ -1,5 +1,9 @@
 # Changelog for passman
 
+## current
+
+- set maximum version of transformers package
+
 ## 0.3.0.2
 
 - more dependency versions
