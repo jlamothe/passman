@@ -3,6 +3,7 @@
 ## current
 
 - set maximum version of transformers package
+- allow user to specifiy a temporary master password to retrieve a password
 
 ## 0.3.0.2
 

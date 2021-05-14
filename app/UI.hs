@@ -27,7 +27,7 @@ module UI (getMasterPass, mainMenu) where
 import Control.Monad (when)
 import Control.Monad.Trans.Class (lift)
 import qualified Control.Monad.Trans.State as S
-import Lens.Micro (over, set, (^.))
+import Lens.Micro (over, set, (^.), (.~))
 import Lens.Micro.Extras (view)
 import System.Console.HCL
   ( Request
@@ -161,11 +161,12 @@ selectServ xs = menu "Select Service" $
 
 servMenu :: String -> S.StateT Status IO ()
 servMenu x = menu x
-  [ ( "show password",  showPass x >> servMenu x )
-  , ( "edit password",  editPassMenu x           )
-  , ( "remove service", removeServ x             )
-  , ( "rename service", renameServ x             )
-  , ( "back",           mainMenu                 )
+  [ ( "show password",           showPass x >> servMenu x )
+  , ( "show alternate password", showAltPass x            )
+  , ( "edit password",           editPassMenu x           )
+  , ( "remove service",          removeServ x             )
+  , ( "rename service",          renameServ x             )
+  , ( "back",                    mainMenu                 )
   ]
 
 editPassMenu :: String -> S.StateT Status IO ()
@@ -225,15 +226,24 @@ doEditPolicy x = withService x mainMenu $ \d -> do
   editPassMenu x
 
 showPass :: String -> S.StateT Status IO ()
-showPass x = do
+showPass x = withService x
+  (lift $ putStrLn "The service could not be found in the database.") $
+  \d -> do
+    lift $ putStrLn ""
+    mp <- S.gets $ view masterPass
+    lift $ putStrLn $ case pwGenerate mp d of
+      Nothing -> "The password data were not valid."
+      Just pw -> "password for " ++ x ++ ": " ++ pw
+
+showAltPass :: String -> S.StateT Status IO ()
+showAltPass srv = do
   lift $ putStrLn ""
-  withService x
-    (lift $ putStrLn "The service could not be found in the database.") $
-    \d -> do
-      mp <- S.gets $ view masterPass
-      lift $ putStrLn $ case pwGenerate mp d of
-        Nothing -> "The password data were not valid."
-        Just pw -> "password for " ++ x ++ ": " ++ pw
+  old <- S.gets $ view masterPass
+  Just new <- lift $ runRequest $ required $ prompt "alternate master password: " reqPassword
+  S.modify $ masterPass .~ new
+  showPass srv
+  S.modify $ masterPass .~ old
+  servMenu srv
 
 -- TODO: refactor this monstrosity
 editPolicy :: PWPolicy -> Request PWPolicy
