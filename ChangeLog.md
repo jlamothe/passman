@@ -1,6 +1,6 @@
 # Changelog for passman
 
-## current
+## 0.3.1
 
 - set maximum version of transformers package
 - allow user to specifiy a temporary master password to retrieve a password

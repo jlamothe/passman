@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5416ad0e8ffcf5ec8d69cb12dcfcdb537e9095de9124670fea9fd4af95ce7612
+-- hash: e3bd0ca2b360b025666f4503e3115caaaed34c7719487d90ae4d5eb58f9621e9
 
 name:           passman
-version:        0.3.0.2
+version:        0.3.1
 synopsis:       a simple password manager
 description:    Please see the README on GitHub at <https://github.com/jlamothe/passman#readme>
 category:       Security
