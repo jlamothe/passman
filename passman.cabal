@@ -1,31 +1,26 @@
-cabal-version: 1.12
+cabal-version: 2.2
 
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 446a4923e2c01f3e5ea52ebcf3b61942b39ff9b86e2118699c05ae8aac097903
+-- hash: 6db36213759313606afd99c8afb12d822c57fdaf5a2a1ac20d7333b8e7d04183
 
 name:           passman
 version:        0.3.1
 synopsis:       a simple password manager
 description:    Please see the README on GitHub at <https://github.com/jlamothe/passman#readme>
 category:       Security
-homepage:       https://github.com/jlamothe/passman#readme
-bug-reports:    https://github.com/jlamothe/passman/issues
+homepage:       https://codeberg.org/jlamothe/passman
 author:         Jonathan Lamothe
 maintainer:     jonathan@jlamothe.net
 copyright:      (C) 2018-2021 Jonathan Lamothe
-license:        LGPL-3
+license:        LGPL-3.0-or-later
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
     ChangeLog.md
-
-source-repository head
-  type: git
-  location: https://github.com/jlamothe/passman
 
 library
   exposed-modules:

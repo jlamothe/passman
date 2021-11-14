@@ -1,10 +1,10 @@
 name:                passman
 version:             0.3.1
-github:              "jlamothe/passman"
-license:             LGPL-3
+license:             LGPL-3.0-or-later
 author:              "Jonathan Lamothe"
 maintainer:          "jonathan@jlamothe.net"
 copyright:           "(C) 2018-2021 Jonathan Lamothe"
+homepage:            https://codeberg.org/jlamothe/passman
 
 extra-source-files:
 - README.md
