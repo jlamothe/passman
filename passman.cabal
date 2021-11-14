@@ -4,14 +4,15 @@ cabal-version: 2.2
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6db36213759313606afd99c8afb12d822c57fdaf5a2a1ac20d7333b8e7d04183
+-- hash: 28f118d81a1b3ac7f27513c569620a2eab195e5abd718c66c5a9d5529ec0268a
 
 name:           passman
 version:        0.3.1
 synopsis:       a simple password manager
-description:    Please see the README on GitHub at <https://github.com/jlamothe/passman#readme>
+description:    a simple password manager - see README.md for details
 category:       Security
 homepage:       https://codeberg.org/jlamothe/passman
+bug-reports:    https://codeberg.org/jlamothe/passman/issues
 author:         Jonathan Lamothe
 maintainer:     jonathan@jlamothe.net
 copyright:      (C) 2018-2021 Jonathan Lamothe

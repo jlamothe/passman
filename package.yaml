@@ -5,6 +5,7 @@ author:              "Jonathan Lamothe"
 maintainer:          "jonathan@jlamothe.net"
 copyright:           "(C) 2018-2021 Jonathan Lamothe"
 homepage:            https://codeberg.org/jlamothe/passman
+bug-reports:         https://codeberg.org/jlamothe/passman/issues
 
 extra-source-files:
 - README.md
